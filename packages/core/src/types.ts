@@ -60,6 +60,11 @@ export interface RecipeVersion extends BaseRecord {
   grindClicks: number | null;
   /** Public: plain-English grind description. */
   grindDescription: string;
+  /** Expected finish window in seconds from the start. Null when unknown. */
+  finishSecondsMin: number | null;
+  finishSecondsMax: number | null;
+  /** Free text about the method, for example "Immersion" or "Needs staged kettle temps". */
+  notes: string;
   steps: RecipeStep[];
 }
 

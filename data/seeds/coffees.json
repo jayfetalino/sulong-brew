@@ -1,0 +1,50 @@
+[
+  {
+    "id": "coffee-peru-gesha-dry",
+    "name": "Peru Gesha dry process",
+    "roastLevel": "light",
+    "espressoPrimary": false,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-peru-gesha-washed",
+    "name": "Peru Gesha washed",
+    "roastLevel": "light",
+    "espressoPrimary": false,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-ethiopia-buku-abel-dry",
+    "name": "Ethiopia Buku Abel dry process",
+    "roastLevel": "light",
+    "espressoPrimary": false,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-rwanda-rulindo-tumba-lot-2",
+    "name": "Rwanda Rulindo Tumba Lot 2",
+    "roastLevel": "medium",
+    "espressoPrimary": false,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-colombia-inza-cresta-el-hato",
+    "name": "Colombia Inza Cresta El Hato",
+    "roastLevel": "medium-dark",
+    "espressoPrimary": true,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-ethiopia-duromina-aba-bulgu-dry",
+    "name": "Ethiopia Duromina Aba Bulgu dry process",
+    "roastLevel": "medium-dark",
+    "espressoPrimary": true,
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  }
+]
