@@ -1,3 +1,4 @@
 export * from './types';
 export * from './math';
 export * from './merge';
+export * from './roastBatch';

@@ -13,6 +13,11 @@ export function weightLossPercent(greenG: number, roastedG: number): number {
   return ((greenG - roastedG) / greenG) * 100;
 }
 
+/** True if the text is a real calendar day written as YYYY-MM-DD. */
+export function isValidDay(day: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) && !Number.isNaN(Date.parse(`${day}T00:00:00Z`));
+}
+
 /** Parses YYYY-MM-DD as a UTC calendar day so time zones never shift the count. */
 function parseDay(day: string): number {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
