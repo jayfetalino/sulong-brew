@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Logo } from './Logo';
+import { db } from './db';
 
 const TABS = [
   { id: 'roasts', label: 'Roasts', note: 'Roast batches will live here (LAB-4).' },
@@ -23,6 +24,13 @@ export function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  const [counts, setCounts] = useState('');
+  useEffect(() => {
+    Promise.all([db.coffees.count(), db.recipes.count()]).then(([c, r]) =>
+      setCounts(`Database: ${c} coffees, ${r} recipes`),
+    );
+  }, []);
+
   const current = TABS.find((t) => t.id === tab) ?? TABS[0];
 
   return (
@@ -34,6 +42,7 @@ export function App() {
       <main class="content">
         <h1>{current.label}</h1>
         <p class="muted">{current.note}</p>
+        <p class="data-line">{counts}</p>
       </main>
       <nav class="tabbar" aria-label="Main">
         {TABS.map((t) => (

@@ -6,7 +6,10 @@ import '@fontsource/ibm-plex-mono/400.css';
 import '@sulong/design-tokens/tokens.css';
 import './styles.css';
 import { App } from './App';
+import { initDb } from './db';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('Missing #app element');
-render(<App />, root);
+
+// Load the starter coffees and recipes before the first screen appears.
+initDb().then(() => render(<App />, root));

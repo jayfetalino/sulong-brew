@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "fake-indexeddb": "^6.2.8",
     "prettier": "^3.9.10",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"

@@ -13,7 +13,9 @@
     "@fontsource/fraunces": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
+    "@sulong/core": "^0.0.0",
     "@sulong/design-tokens": "0.0.0",
+    "dexie": "^4.4.7",
     "preact": "^11.2.0"
   },
   "devDependencies": {

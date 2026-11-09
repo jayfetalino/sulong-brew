@@ -23,6 +23,13 @@ h1 {
   margin: 0;
 }
 
+.data-line {
+  font-family: var(--font-data);
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin: var(--space-4) 0 0;
+}
+
 .shell {
   min-height: 100dvh;
   display: flex;
