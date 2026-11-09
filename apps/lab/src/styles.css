@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2rem;
+  margin: 0 0 var(--space-3);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--color-accent);
+}
+
+.logo-placeholder {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-data);
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+}
+
+.content {
+  flex: 1;
+  padding: var(--space-5) var(--space-4);
+  padding-bottom: calc(var(--tabbar-height) + var(--space-5) + env(safe-area-inset-bottom));
+}
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  height: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.tab {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tab.active {
+  color: var(--color-accent);
+}
