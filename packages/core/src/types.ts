@@ -3,6 +3,11 @@ export interface BaseRecord {
   id: string;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Set when the record is deleted. The record stays in the database as a marker
+   * so that merge-import can carry the deletion to other devices.
+   */
+  deletedAt?: string | null;
 }
 
 export type RoastLevel = 'light' | 'medium' | 'medium-dark';

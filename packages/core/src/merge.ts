@@ -20,8 +20,8 @@ function time(record: BaseRecord): number {
 /**
  * Merges two lists of records by id. The newest updatedAt wins.
  * On a tie the local copy stays. Neither input is changed.
- * Note: there are no delete markers yet, so a record removed on one device
- * will come back if the other device still has it.
+ * Deleted records stay in the list with a deletedAt time (see softDelete.ts),
+ * so a deletion is just another change and the newest one wins.
  */
 export function mergeRecords<T extends BaseRecord>(local: T[], incoming: T[]): MergeResult<T> {
   const byId = new Map<string, T>();
