@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Logo } from './Logo';
 import { db } from './db';
+import { RoastsPage } from './RoastsPage';
 
 const TABS = [
   { id: 'roasts', label: 'Roasts', note: 'Roast batches will live here (LAB-4).' },
@@ -40,9 +41,15 @@ export function App() {
         <span class="topbar-title">Sulong Brew Lab</span>
       </header>
       <main class="content">
-        <h1>{current.label}</h1>
-        <p class="muted">{current.note}</p>
-        <p class="data-line">{counts}</p>
+        {tab === 'roasts' ? (
+          <RoastsPage />
+        ) : (
+          <>
+            <h1>{current.label}</h1>
+            <p class="muted">{current.note}</p>
+            <p class="data-line">{counts}</p>
+          </>
+        )}
       </main>
       <nav class="tabbar" aria-label="Main">
         {TABS.map((t) => (
