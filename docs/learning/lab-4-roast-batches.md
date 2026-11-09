@@ -14,9 +14,11 @@
 - **Live queries.** `useLive` re-runs a database query whenever the data changes, so the list updates the moment you save.
 - **16px inputs.** iPhone Safari zooms into any field with text smaller than 16px, so the form fields are 16px.
 
-## Left out on purpose
+## Delete
 
-There is no delete button yet. Merge has no delete markers, so a deleted batch could return after an import. This needs a decision before LAB-8.
+The edit form has a Delete batch button with a second "Yes, delete" step. Delete is a **soft delete**: the batch is stamped with `deletedAt` and hidden, not erased. Otherwise the next merge-import from your phone would bring it back. See ADR-006.
+
+Remember: every new list must filter out deleted records with `isDeleted`.
 
 ## Remember
 

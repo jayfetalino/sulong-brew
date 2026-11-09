@@ -16,7 +16,7 @@
 
 ## Known gap
 
-There are no delete markers yet. If you delete a record on your Mac but your phone still has it, a merge will bring it back. Worth a decision before LAB-8.
+Merge alone cannot tell "deleted" from "never had it". This was solved in LAB-4 with soft deletes (ADR-006).
 
 ## Remember
 
