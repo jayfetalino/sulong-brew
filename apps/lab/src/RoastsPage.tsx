@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { summarizeRoastBatch, type RoastBatch } from '@sulong/core';
+import { isDeleted, summarizeRoastBatch, type RoastBatch } from '@sulong/core';
 import { db } from './db';
 import { formatGrams, formatPercent, ROAST_LEVEL_LABELS, todayLocal } from './format';
 import { RoastBatchForm } from './RoastBatchForm';
@@ -7,7 +7,13 @@ import { useLive } from './useLive';
 
 export function RoastsPage() {
   const coffees = useLive(() => db.coffees.orderBy('name').toArray());
-  const batches = useLive(() => db.roastBatches.orderBy('roastDate').reverse().toArray());
+  const batches = useLive(() =>
+    db.roastBatches
+      .orderBy('roastDate')
+      .reverse()
+      .filter((b) => !isDeleted(b))
+      .toArray(),
+  );
   // 'new' = creating, a batch = editing it, null = showing the list.
   const [editing, setEditing] = useState<'new' | RoastBatch | null>(null);
 

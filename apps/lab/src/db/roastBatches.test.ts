@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { RoastBatchFields } from '@sulong/core';
 import { LabDb } from './db';
-import { saveRoastBatch } from './roastBatches';
+import { deleteRoastBatch, saveRoastBatch } from './roastBatches';
 
 let db: LabDb;
 
@@ -47,5 +47,16 @@ describe('saveRoastBatch', () => {
     expect(edited.updatedAt).toBe('2026-11-10T08:00:00.000Z');
     expect(await db.roastBatches.count()).toBe(1);
     expect((await db.roastBatches.get(first.id))?.roastedWeightG).toBe(168);
+  });
+});
+
+describe('deleteRoastBatch', () => {
+  it('keeps the record but marks it deleted with a newer updatedAt', async () => {
+    const saved = await saveRoastBatch(db, fields, undefined, new Date('2026-11-09T12:00:00Z'));
+    await deleteRoastBatch(db, saved, new Date('2026-11-10T08:00:00Z'));
+    const stored = await db.roastBatches.get(saved.id);
+    expect(stored?.deletedAt).toBe('2026-11-10T08:00:00.000Z');
+    expect(stored?.updatedAt).toBe('2026-11-10T08:00:00.000Z');
+    expect(await db.roastBatches.count()).toBe(1);
   });
 });

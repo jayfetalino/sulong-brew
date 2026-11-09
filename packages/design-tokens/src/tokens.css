@@ -28,6 +28,8 @@
   --color-text: var(--sulong-cream);
   --color-text-muted: color-mix(in srgb, var(--sulong-cream) 65%, var(--sulong-obsidian));
   --color-accent: var(--sulong-gold);
+  /* Not a brand color: only for destructive actions such as Delete. */
+  --color-danger: #e0715a;
 }
 
 :root[data-theme='cream'] {
@@ -37,4 +39,5 @@
   --color-text: var(--sulong-obsidian);
   --color-text-muted: color-mix(in srgb, var(--sulong-obsidian) 70%, var(--sulong-cream));
   --color-accent: var(--sulong-obsidian);
+  --color-danger: #b3321b;
 }

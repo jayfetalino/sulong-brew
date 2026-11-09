@@ -8,7 +8,7 @@ import {
   type RoastLevel,
 } from '@sulong/core';
 import { db } from './db';
-import { saveRoastBatch } from './db/roastBatches';
+import { deleteRoastBatch, saveRoastBatch } from './db/roastBatches';
 import { ROAST_LEVEL_LABELS, todayLocal } from './format';
 
 interface Props {
@@ -45,6 +45,18 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
   const [values, setValues] = useState<FormValues>(() => initialValues(batch));
   const [errors, setErrors] = useState<RoastBatchErrors>({});
   const [saving, setSaving] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  const onDelete = async () => {
+    if (!batch) return;
+    setSaving(true);
+    try {
+      await deleteRoastBatch(db, batch);
+      onDone();
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const set = <K extends keyof FormValues>(key: K, value: FormValues[K]) =>
     setValues((v) => ({ ...v, [key]: value }));
@@ -174,6 +186,29 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
           Cancel
         </button>
       </div>
+
+      {batch &&
+        (confirmingDelete ? (
+          <div class="danger-zone">
+            <p>Delete this roast batch? It will disappear from the list on all your devices.</p>
+            <div class="row">
+              <button type="button" class="button danger" disabled={saving} onClick={onDelete}>
+                Yes, delete
+              </button>
+              <button type="button" class="button" onClick={() => setConfirmingDelete(false)}>
+                Keep it
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            class="button danger-outline"
+            onClick={() => setConfirmingDelete(true)}
+          >
+            Delete batch
+          </button>
+        ))}
     </form>
   );
 }

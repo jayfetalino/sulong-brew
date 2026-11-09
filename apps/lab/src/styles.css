@@ -214,6 +214,32 @@ h2 {
   gap: var(--space-3);
 }
 
+.button.danger,
+.button.danger-outline {
+  border-color: var(--color-danger);
+}
+
+.button.danger {
+  background: var(--color-danger);
+  color: var(--sulong-obsidian);
+}
+
+.button.danger-outline {
+  color: var(--color-danger);
+}
+
+.danger-zone {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.danger-zone p {
+  margin: 0;
+}
+
 .field-error {
   color: var(--color-accent);
   font-size: 0.8125rem;
