@@ -1,0 +1,12 @@
+{
+  "name": "sulong-brew",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
