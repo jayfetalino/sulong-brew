@@ -7,6 +7,7 @@
     "src"
   ],
   "exports": {
-    "./tokens.css": "./src/tokens.css"
+    "./tokens.css": "./src/tokens.css",
+    "./logo.svg": "./src/assets/sulong-roastery-v3-sticker.svg"
   }
 }

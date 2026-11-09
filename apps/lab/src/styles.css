@@ -43,16 +43,10 @@ h1 {
   color: var(--color-accent);
 }
 
-.logo-placeholder {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius);
-  font-family: var(--font-data);
-  font-size: 0.625rem;
-  color: var(--color-text-muted);
+.logo {
+  height: 48px;
+  width: auto;
+  display: block;
 }
 
 .content {

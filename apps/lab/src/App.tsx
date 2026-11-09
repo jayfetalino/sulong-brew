@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { LogoPlaceholder } from './LogoPlaceholder';
+import { Logo } from './Logo';
 
 const TABS = [
   { id: 'roasts', label: 'Roasts', note: 'Roast batches will live here (LAB-4).' },
@@ -28,7 +28,7 @@ export function App() {
   return (
     <div class="shell">
       <header class="topbar">
-        <LogoPlaceholder />
+        <Logo />
         <span class="topbar-title">Sulong Brew Lab</span>
       </header>
       <main class="content">
