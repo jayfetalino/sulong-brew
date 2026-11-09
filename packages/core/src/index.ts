@@ -1,1 +1,3 @@
-export const PACKAGE_NAME = 'core';
+export * from './types';
+export * from './math';
+export * from './merge';
