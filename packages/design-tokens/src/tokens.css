@@ -1,0 +1,40 @@
+/* Sulong brand tokens. Raw brand values first, then semantic roles.
+   The lab is dark; the public guide sets data-theme="cream". */
+
+:root {
+  /* Brand palette */
+  --sulong-obsidian: #2b2d1f;
+  --sulong-gold: #c9a84c;
+  --sulong-cream: #f2ead3;
+
+  /* Fonts */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-data: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* Spacing and shape */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --radius: 10px;
+  --tabbar-height: 64px;
+
+  /* Semantic roles: dark (lab) is the default */
+  --color-bg: var(--sulong-obsidian);
+  --color-surface: color-mix(in srgb, var(--sulong-cream) 8%, var(--sulong-obsidian));
+  --color-border: color-mix(in srgb, var(--sulong-cream) 18%, var(--sulong-obsidian));
+  --color-text: var(--sulong-cream);
+  --color-text-muted: color-mix(in srgb, var(--sulong-cream) 65%, var(--sulong-obsidian));
+  --color-accent: var(--sulong-gold);
+}
+
+:root[data-theme='cream'] {
+  --color-bg: var(--sulong-cream);
+  --color-surface: color-mix(in srgb, var(--sulong-obsidian) 6%, var(--sulong-cream));
+  --color-border: color-mix(in srgb, var(--sulong-obsidian) 20%, var(--sulong-cream));
+  --color-text: var(--sulong-obsidian);
+  --color-text-muted: color-mix(in srgb, var(--sulong-obsidian) 70%, var(--sulong-cream));
+  --color-accent: var(--sulong-obsidian);
+}
