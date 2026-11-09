@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Logo } from './Logo';
 import { db } from './db';
+import { RecipesPage } from './RecipesPage';
 import { RoastsPage } from './RoastsPage';
 
 const TABS = [
@@ -43,6 +44,8 @@ export function App() {
       <main class="content">
         {tab === 'roasts' ? (
           <RoastsPage />
+        ) : tab === 'recipes' ? (
+          <RecipesPage />
         ) : (
           <>
             <h1>{current.label}</h1>

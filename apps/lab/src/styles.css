@@ -244,3 +244,112 @@ h2 {
   color: var(--color-accent);
   font-size: 0.8125rem;
 }
+
+.stack {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.chip {
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-3);
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.chip.active {
+  color: var(--sulong-obsidian);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.detail-stats {
+  margin-bottom: var(--space-4);
+}
+
+.step-list {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.step-view {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.step-time {
+  font-family: var(--font-data);
+  color: var(--color-accent);
+}
+
+.step-title {
+  font-weight: 600;
+}
+
+.step-meta {
+  font-family: var(--font-data);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.step-note {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.step-edit {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.step-tools {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.icon-button {
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.icon-button:disabled {
+  opacity: 0.4;
+}

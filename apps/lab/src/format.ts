@@ -1,4 +1,4 @@
-import { roundTo, type RoastLevel } from '@sulong/core';
+import { roundTo, type RecipeStep, type RoastLevel, type StepKind } from '@sulong/core';
 
 export const ROAST_LEVEL_LABELS: Record<RoastLevel, string> = {
   light: 'Light',
@@ -18,6 +18,28 @@ export function todayLocal(now: Date = new Date()): string {
 export function formatPercent(value: number | null): string {
   return value === null ? 'Not set' : `${roundTo(value, 1).toFixed(1)} %`;
 }
+
+/** One line describing a step, for example "Pour to 220 g". */
+export function describeStep(step: RecipeStep): string {
+  const weight = step.targetWeightG === null ? '' : ` ${step.targetWeightG} g`;
+  switch (step.kind) {
+    case 'pour':
+      return `Pour to${weight}`;
+    case 'pause':
+      return step.targetWeightG === null ? 'Pause' : `Pause at${weight}`;
+    case 'steep':
+      return 'Steep';
+    case 'drawdown':
+      return 'Drawdown';
+  }
+}
+
+export const STEP_KIND_LABELS: Record<StepKind, string> = {
+  pour: 'Pour',
+  pause: 'Pause',
+  steep: 'Steep',
+  drawdown: 'Drawdown',
+};
 
 export function formatGrams(value: number | null): string {
   return value === null ? 'Not set' : `${value} g`;
