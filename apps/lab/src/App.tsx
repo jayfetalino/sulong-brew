@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { BackupPage } from './BackupPage';
 import { BrewsPage } from './BrewsPage';
 import { Logo } from './Logo';
 import { RecipesPage } from './RecipesPage';
@@ -11,17 +12,20 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
+/** The three tabs, plus the Backup screen that opens from the header. */
+type Route = TabId | 'backup';
 
-function tabFromHash(): TabId {
+function routeFromHash(): Route {
   const id = window.location.hash.replace('#/', '');
+  if (id === 'backup') return 'backup';
   return TABS.find((t) => t.id === id)?.id ?? 'roasts';
 }
 
 export function App() {
-  const [tab, setTab] = useState<TabId>(tabFromHash);
+  const [route, setRoute] = useState<Route>(routeFromHash);
 
   useEffect(() => {
-    const onHashChange = () => setTab(tabFromHash());
+    const onHashChange = () => setRoute(routeFromHash());
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
@@ -31,17 +35,32 @@ export function App() {
       <header class="topbar">
         <Logo />
         <span class="topbar-title">Sulong Brew Lab</span>
+        <a
+          href="#/backup"
+          class={route === 'backup' ? 'topbar-link active' : 'topbar-link'}
+          aria-current={route === 'backup' ? 'page' : undefined}
+        >
+          Backup
+        </a>
       </header>
       <main class="content">
-        {tab === 'roasts' ? <RoastsPage /> : tab === 'recipes' ? <RecipesPage /> : <BrewsPage />}
+        {route === 'roasts' ? (
+          <RoastsPage />
+        ) : route === 'recipes' ? (
+          <RecipesPage />
+        ) : route === 'brews' ? (
+          <BrewsPage />
+        ) : (
+          <BackupPage />
+        )}
       </main>
       <nav class="tabbar" aria-label="Main">
         {TABS.map((t) => (
           <a
             key={t.id}
             href={`#/${t.id}`}
-            class={t.id === tab ? 'tab active' : 'tab'}
-            aria-current={t.id === tab ? 'page' : undefined}
+            class={t.id === route ? 'tab active' : 'tab'}
+            aria-current={t.id === route ? 'page' : undefined}
           >
             {t.label}
           </a>
