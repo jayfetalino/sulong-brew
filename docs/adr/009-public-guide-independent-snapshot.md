@@ -11,8 +11,9 @@ The guide is public and opened by QR code on a bag, often on a phone with a weak
 
 - `apps/guide` is a plain TypeScript and CSS page built with Vite. No UI framework. Its only runtime dependencies are the three `@fontsource` font packages.
 - It imports nothing from other folders in this repo. Its tsconfig does not extend the root one. Brand colors and the logo are local copies.
-- Its content comes from one JSON file, `src/snapshot.json`: a frozen copy of one recipe version, made by `createGuideSnapshot` in `packages/core`, which copies an explicit allow-list of fields.
-- A test rebuilds the snapshot from the lab seed and checks the committed file matches. Another test checks that private fields cannot appear.
+- Its content comes from JSON files in `src/snapshots/`, one per recipe: each a frozen copy of one recipe version, made by `createGuideSnapshot` in `packages/core`, which copies an explicit allow-list of fields.
+- The Filter tab shows a row of recipe buttons (a recipe picker). A link such as `/#the-still-pour` opens one recipe directly.
+- A test rebuilds every snapshot from the lab seed and checks each committed file matches. Another test checks that private fields cannot appear.
 - Unit choices (C/F, g/oz) are remembered in localStorage on the visitor's device. They are not sent anywhere.
 
 ## Alternatives

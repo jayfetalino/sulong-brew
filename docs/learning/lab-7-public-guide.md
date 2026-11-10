@@ -6,6 +6,10 @@
 - The timer highlights the current step, dims finished ones, and counts down to the next step ("Next in 0:22: Pour to 220 g"). It keeps the phone screen awake while running, where the phone allows it.
 - The page is built from a frozen snapshot (`snapshot.json`) of one recipe version. `createGuideSnapshot` in `packages/core` makes it from an explicit list of public fields.
 
+## Other brew methods
+
+The Filter tab has a recipe picker with all five recipes: The Sulong Pour, The Downshift, The Step-Down, The Still Pour and Sulong Switch Standard. Each one is its own snapshot file, so adding or removing a recipe means adding or deleting a file. A link like `/#the-still-pour` opens that recipe, which is how a QR code can point at one recipe. Switching recipes resets the timer, because the steps are different.
+
 ## Key ideas
 
 - **A snapshot is a photocopy.** Editing the recipe in the lab later does not change a published guide. A test proves it.
