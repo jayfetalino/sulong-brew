@@ -76,13 +76,22 @@ export interface RecipeVersion extends BaseRecord {
 export interface Brew extends BaseRecord {
   recipeVersionId: string;
   roastBatchId: string;
+  /** Calendar day of the brew, YYYY-MM-DD. Used to count days off roast at brew time. */
+  brewDate: string;
   doseG: number;
+  /** Beverage weight in the cup, in grams. */
   yieldG: number | null;
   brewSeconds: number | null;
+  /** Water temperature actually used. Null when not recorded. */
+  waterTempC: number | null;
+  /** Grinder clicks actually used. Null when not recorded. */
+  grindClicks: number | null;
   /** TDS in percent, typed by hand. */
   tdsPercent: number | null;
-  /** Rating scale is an open decision, so this stays unconstrained for now. */
+  /** Overall score, 1 to 5 in half steps. Null when not rated. */
   rating: number | null;
+  /** Optional cupping-style scores, 1 to 5 in half steps, keyed by attribute id. */
+  attributeRatings: Record<string, number>;
   tags: string[];
   notes: string;
 }

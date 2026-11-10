@@ -4,3 +4,4 @@ export * from './merge';
 export * from './roastBatch';
 export * from './softDelete';
 export * from './recipeVersion';
+export * from './brew';
