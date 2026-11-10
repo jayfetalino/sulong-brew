@@ -4,19 +4,25 @@ import '@fontsource/inter/600.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import './styles.css';
 import logoUrl from './assets/sulong-roastery-v3-sticker.svg';
-import snapshotJson from './snapshot.json';
 import { h } from './dom';
+import { RECIPES, findRecipeIndex } from './recipes';
 import { nextStepAfter, stepIndexAt } from './timer';
 import type { GuideSnapshot, TempUnit, WeightUnit } from './types';
 import { formatClock, formatTemp, formatWeight, ratioLabel, stepTitle } from './units';
 
-const snapshot = snapshotJson as GuideSnapshot;
 const PREFS_KEY = 'sulong-guide-prefs';
+
+const firstRecipe = RECIPES[0];
+if (!firstRecipe) throw new Error('No recipes are published in src/snapshots');
+
+/** The recipe on screen. Changes when a visitor picks another one. */
+let snapshot: GuideSnapshot = firstRecipe.snapshot;
 
 type Tab = 'filter' | 'espresso';
 type TimerStatus = 'idle' | 'running' | 'paused';
 
 const state = {
+  recipeIndex: 0,
   tab: 'filter' as Tab,
   temp: 'C' as TempUnit,
   weight: 'g' as WeightUnit,
@@ -238,6 +244,37 @@ function renderSteps(): HTMLElement {
   );
 }
 
+/** Switches to another recipe. The timer restarts, because its steps are different. */
+function selectRecipe(index: number, updateUrl = true): void {
+  const recipe = RECIPES[index];
+  if (!recipe) return;
+  state.recipeIndex = index;
+  snapshot = recipe.snapshot;
+  state.timer = { status: 'idle', accumulatedMs: 0, startedAt: 0 };
+  void keepScreenOn(false);
+  document.title = `${snapshot.recipeName} | Sulong Coffee`;
+  // replaceState keeps the link shareable without adding a back-button entry per tap.
+  if (updateUrl) history.replaceState(null, '', `#${recipe.slug}`);
+  render();
+}
+
+/** The row of recipe buttons. Left out when only one recipe is published. */
+function renderRecipePicker(): HTMLElement | null {
+  if (RECIPES.length < 2) return null;
+  return h(
+    'div',
+    { class: 'recipes', attrs: { role: 'group', 'aria-label': 'Recipe' } },
+    ...RECIPES.map((recipe, i) =>
+      h('button', {
+        class: 'chip',
+        text: recipe.snapshot.recipeName,
+        attrs: { type: 'button', 'aria-pressed': String(i === state.recipeIndex) },
+        on: { click: () => selectRecipe(i) },
+      }),
+    ),
+  );
+}
+
 function renderFilterPanel(): HTMLElement {
   const finish =
     snapshot.finishSecondsMin !== null && snapshot.finishSecondsMax !== null
@@ -246,6 +283,7 @@ function renderFilterPanel(): HTMLElement {
   return h(
     'section',
     { attrs: { role: 'tabpanel', id: 'panel-filter' } },
+    renderRecipePicker(),
     renderFacts(),
     renderTimer(),
     h('h2', { text: 'Steps' }),
@@ -371,5 +409,13 @@ function updateTimerView(): void {
       : 'Last step. Let it drain.';
 }
 
+const slugInUrl = () => window.location.hash.replace(/^#/, '');
+
+// A link like /#the-still-pour opens that recipe. If the visitor edits the link or uses Back, follow it.
+window.addEventListener('hashchange', () => {
+  const index = findRecipeIndex(RECIPES, slugInUrl());
+  if (index !== state.recipeIndex) selectRecipe(index, false);
+});
+
 loadPrefs();
-render();
+selectRecipe(findRecipeIndex(RECIPES, slugInUrl()), false);
