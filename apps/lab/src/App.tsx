@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'preact/hooks';
+import { BrewsPage } from './BrewsPage';
 import { Logo } from './Logo';
-import { db } from './db';
 import { RecipesPage } from './RecipesPage';
 import { RoastsPage } from './RoastsPage';
 
 const TABS = [
-  { id: 'roasts', label: 'Roasts', note: 'Roast batches will live here (LAB-4).' },
-  { id: 'recipes', label: 'Recipes', note: 'Versioned recipes will live here (LAB-5).' },
-  { id: 'brews', label: 'Brews', note: 'The brew log will live here (LAB-6).' },
+  { id: 'roasts', label: 'Roasts' },
+  { id: 'recipes', label: 'Recipes' },
+  { id: 'brews', label: 'Brews' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -26,15 +26,6 @@ export function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const [counts, setCounts] = useState('');
-  useEffect(() => {
-    Promise.all([db.coffees.count(), db.recipes.count()]).then(([c, r]) =>
-      setCounts(`Database: ${c} coffees, ${r} recipes`),
-    );
-  }, []);
-
-  const current = TABS.find((t) => t.id === tab) ?? TABS[0];
-
   return (
     <div class="shell">
       <header class="topbar">
@@ -42,17 +33,7 @@ export function App() {
         <span class="topbar-title">Sulong Brew Lab</span>
       </header>
       <main class="content">
-        {tab === 'roasts' ? (
-          <RoastsPage />
-        ) : tab === 'recipes' ? (
-          <RecipesPage />
-        ) : (
-          <>
-            <h1>{current.label}</h1>
-            <p class="muted">{current.note}</p>
-            <p class="data-line">{counts}</p>
-          </>
-        )}
+        {tab === 'roasts' ? <RoastsPage /> : tab === 'recipes' ? <RecipesPage /> : <BrewsPage />}
       </main>
       <nav class="tabbar" aria-label="Main">
         {TABS.map((t) => (
