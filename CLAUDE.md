@@ -89,7 +89,7 @@ Later, not now: Bluetooth scale and refractometer drivers, live guide, compare v
 
 - Switch hybrid water temp
 - Logo SVG file
-- Rating design
+- Rating attribute list (decided in ADR-008: overall 1 to 5 plus six cupping-style scores; Jay can still change the list)
 - Whether first crack is logged anywhere
 - Scale choice
 - Domain, before printing QR codes
