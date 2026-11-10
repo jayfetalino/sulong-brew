@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import snapshot from './snapshot.json';
+import snapshot from './snapshots/01-the-sulong-pour.json';
 import { nextStepAfter, stepIndexAt } from './timer';
 import type { GuideSnapshot } from './types';
 

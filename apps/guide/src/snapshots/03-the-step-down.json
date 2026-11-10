@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-11-10T00:00:00.000Z",
+  "recipeName": "The Step-Down",
+  "versionNumber": 1,
+  "doseG": 20,
+  "waterG": 320,
+  "waterTempC": null,
+  "grindDescription": "",
+  "finishSecondsMin": 120,
+  "finishSecondsMax": 165,
+  "steps": [
+    {
+      "kind": "pour",
+      "startSeconds": 0,
+      "targetWeightG": 40,
+      "tempC": 94,
+      "valve": null,
+      "note": "Bloom."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 45,
+      "targetWeightG": 180,
+      "tempC": 91,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 90,
+      "targetWeightG": 320,
+      "tempC": 88,
+      "valve": null,
+      "note": ""
+    }
+  ],
+  "coffee": null,
+  "espresso": null
+}

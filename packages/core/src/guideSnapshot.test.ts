@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import seedVersions from '../../../data/seeds/recipe-versions.json';
-import guideSnapshot from '../../../apps/guide/src/snapshot.json';
+import seedRecipes from '../../../data/seeds/recipes.json';
+import sulongPour from '../../../apps/guide/src/snapshots/01-the-sulong-pour.json';
+import downshift from '../../../apps/guide/src/snapshots/02-the-downshift.json';
+import stepDown from '../../../apps/guide/src/snapshots/03-the-step-down.json';
+import stillPour from '../../../apps/guide/src/snapshots/04-the-still-pour.json';
+import switchStandard from '../../../apps/guide/src/snapshots/05-sulong-switch-standard.json';
 import { createGuideSnapshot } from './guideSnapshot';
 import type { RecipeVersion } from './types';
 
@@ -73,13 +78,25 @@ describe('createGuideSnapshot', () => {
     expect(snapshot.espresso).toBeNull();
   });
 
-  it('matches the snapshot committed in apps/guide (rebuilt from the seed)', () => {
+  // Every snapshot committed in apps/guide must equal what the lab would publish from the seed.
+  // When a new snapshot file is added to apps/guide/src/snapshots, add it to this list.
+  it.each([
+    ['rv-sulong-pour-1', sulongPour],
+    ['rv-downshift-1', downshift],
+    ['rv-step-down-1', stepDown],
+    ['rv-still-pour-1', stillPour],
+    ['rv-switch-standard-1', switchStandard],
+  ])('committed guide snapshot for %s matches the seed', (versionId, committed) => {
+    const version = (seedVersions as RecipeVersion[]).find((v) => v.id === versionId);
+    const recipe = (seedRecipes as { id: string; name: string }[]).find(
+      (r) => r.id === version?.recipeId,
+    );
     const rebuilt = createGuideSnapshot({
-      recipeName: 'The Sulong Pour',
-      version: sulongPourV1 as RecipeVersion,
+      recipeName: recipe?.name as string,
+      version: version as RecipeVersion,
       coffee: null,
-      publishedAt: new Date(guideSnapshot.publishedAt),
+      publishedAt: new Date(committed.publishedAt),
     });
-    expect(guideSnapshot).toEqual(rebuilt);
+    expect(committed).toEqual(rebuilt);
   });
 });
