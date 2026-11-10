@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-11-10T00:00:00.000Z",
+  "recipeName": "The Sulong Pour",
+  "versionNumber": 1,
+  "doseG": 20,
+  "waterG": 310,
+  "waterTempC": 91,
+  "grindDescription": "Medium-fine",
+  "finishSecondsMin": 180,
+  "finishSecondsMax": 200,
+  "steps": [
+    {
+      "kind": "pour",
+      "startSeconds": 0,
+      "targetWeightG": 40,
+      "tempC": null,
+      "valve": null,
+      "note": "Bloom. One gentle swirl."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 40,
+      "targetWeightG": 220,
+      "tempC": null,
+      "valve": null,
+      "note": "Spiral pour."
+    },
+    {
+      "kind": "pause",
+      "startSeconds": 80,
+      "targetWeightG": 220,
+      "tempC": null,
+      "valve": null,
+      "note": "The breath. Pause at 220 g."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 87,
+      "targetWeightG": 310,
+      "tempC": null,
+      "valve": null,
+      "note": "Pour to 310 g."
+    },
+    {
+      "kind": "drawdown",
+      "startSeconds": 115,
+      "targetWeightG": null,
+      "tempC": null,
+      "valve": null,
+      "note": "Drawdown."
+    }
+  ],
+  "coffee": null,
+  "espresso": null
+}
