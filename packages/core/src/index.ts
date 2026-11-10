@@ -6,3 +6,4 @@ export * from './softDelete';
 export * from './recipeVersion';
 export * from './brew';
 export * from './guideSnapshot';
+export * from './backup';
