@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-11-10T00:00:00.000Z",
+  "recipeName": "The Still Pour",
+  "versionNumber": 1,
+  "doseG": 20,
+  "waterG": 320,
+  "waterTempC": null,
+  "grindDescription": "",
+  "finishSecondsMin": 195,
+  "finishSecondsMax": 225,
+  "steps": [
+    {
+      "kind": "pour",
+      "startSeconds": 0,
+      "targetWeightG": 40,
+      "tempC": null,
+      "valve": null,
+      "note": "Bloom."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 45,
+      "targetWeightG": 320,
+      "tempC": null,
+      "valve": null,
+      "note": "Fill to 320 g. No spiral."
+    },
+    {
+      "kind": "steep",
+      "startSeconds": 60,
+      "targetWeightG": null,
+      "tempC": null,
+      "valve": null,
+      "note": "One firm stir (3-4 rotations), then leave static until 2:30."
+    },
+    {
+      "kind": "drawdown",
+      "startSeconds": 150,
+      "targetWeightG": null,
+      "tempC": null,
+      "valve": "open",
+      "note": "Open the valve."
+    }
+  ],
+  "coffee": null,
+  "espresso": null
+}

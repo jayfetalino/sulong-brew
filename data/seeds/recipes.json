@@ -1,0 +1,37 @@
+[
+  {
+    "id": "recipe-sulong-pour",
+    "name": "The Sulong Pour",
+    "currentVersionId": "rv-sulong-pour-1",
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "recipe-downshift",
+    "name": "The Downshift",
+    "currentVersionId": "rv-downshift-1",
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "recipe-step-down",
+    "name": "The Step-Down",
+    "currentVersionId": "rv-step-down-1",
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "recipe-still-pour",
+    "name": "The Still Pour",
+    "currentVersionId": "rv-still-pour-1",
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  },
+  {
+    "id": "recipe-switch-standard",
+    "name": "Sulong Switch Standard",
+    "currentVersionId": "rv-switch-standard-1",
+    "createdAt": "2026-11-09T00:00:00.000Z",
+    "updatedAt": "2026-11-09T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-11-10T00:00:00.000Z",
+  "recipeName": "The Downshift",
+  "versionNumber": 1,
+  "doseG": 20,
+  "waterG": 320,
+  "waterTempC": 92,
+  "grindDescription": "",
+  "finishSecondsMin": 155,
+  "finishSecondsMax": 180,
+  "steps": [
+    {
+      "kind": "pour",
+      "startSeconds": 0,
+      "targetWeightG": 40,
+      "tempC": null,
+      "valve": null,
+      "note": "Bloom."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 45,
+      "targetWeightG": 140,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 75,
+      "targetWeightG": 220,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 105,
+      "targetWeightG": 280,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 130,
+      "targetWeightG": 320,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    }
+  ],
+  "coffee": null,
+  "espresso": null
+}

@@ -1,0 +1,97 @@
+/** Every stored record has these three fields. Dates are ISO 8601 strings. */
+export interface BaseRecord {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  /**
+   * Set when the record is deleted. The record stays in the database as a marker
+   * so that merge-import can carry the deletion to other devices.
+   */
+  deletedAt?: string | null;
+}
+
+export type RoastLevel = 'light' | 'medium' | 'medium-dark';
+
+export interface Coffee extends BaseRecord {
+  name: string;
+  roastLevel: RoastLevel;
+  /** True for coffees whose main use is espresso. */
+  espressoPrimary: boolean;
+}
+
+export interface RoastBatch extends BaseRecord {
+  coffeeId: string;
+  /** Calendar date of the roast, YYYY-MM-DD. */
+  roastDate: string;
+  /** Kaffelogic profile name. Empty until Jay enters it. */
+  profileName: string | null;
+  roastLevel: RoastLevel;
+  greenWeightG: number | null;
+  roastedWeightG: number | null;
+  notes: string;
+}
+
+export type StepKind = 'pour' | 'pause' | 'steep' | 'drawdown';
+export type ValveState = 'open' | 'closed';
+
+export interface RecipeStep {
+  kind: StepKind;
+  /** Seconds from the start of the brew. */
+  startSeconds: number;
+  /** Cumulative scale weight to reach, in grams. Null when the step has no target. */
+  targetWeightG: number | null;
+  /** Water temperature in C for this step, when it differs from the recipe. */
+  tempC: number | null;
+  /** Only for Switch recipes. */
+  valve: ValveState | null;
+  note: string;
+}
+
+export interface Recipe extends BaseRecord {
+  name: string;
+  /** Points at the newest RecipeVersion. */
+  currentVersionId: string | null;
+}
+
+/** Immutable once saved. To change a recipe, save a new version. */
+export interface RecipeVersion extends BaseRecord {
+  recipeId: string;
+  versionNumber: number;
+  doseG: number;
+  waterG: number;
+  /** Null means unknown. Never guess. */
+  waterTempC: number | null;
+  /** Private: grinder clicks. */
+  grindClicks: number | null;
+  /** Public: plain-English grind description. */
+  grindDescription: string;
+  /** Expected finish window in seconds from the start. Null when unknown. */
+  finishSecondsMin: number | null;
+  finishSecondsMax: number | null;
+  /** Free text about the method, for example "Immersion" or "Needs staged kettle temps". */
+  notes: string;
+  steps: RecipeStep[];
+}
+
+export interface Brew extends BaseRecord {
+  recipeVersionId: string;
+  roastBatchId: string;
+  /** Calendar day of the brew, YYYY-MM-DD. Used to count days off roast at brew time. */
+  brewDate: string;
+  doseG: number;
+  /** Beverage weight in the cup, in grams. */
+  yieldG: number | null;
+  brewSeconds: number | null;
+  /** Water temperature actually used. Null when not recorded. */
+  waterTempC: number | null;
+  /** Grinder clicks actually used. Null when not recorded. */
+  grindClicks: number | null;
+  /** TDS in percent, typed by hand. */
+  tdsPercent: number | null;
+  /** Overall score, 1 to 5 in half steps. Null when not rated. */
+  rating: number | null;
+  /** Optional cupping-style scores, 1 to 5 in half steps, keyed by attribute id. */
+  attributeRatings: Record<string, number>;
+  tags: string[];
+  notes: string;
+}

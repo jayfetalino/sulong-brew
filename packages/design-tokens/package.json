@@ -1,0 +1,13 @@
+{
+  "name": "@sulong/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./logo.svg": "./src/assets/sulong-roastery-v3-sticker.svg"
+  }
+}

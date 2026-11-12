@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-11-10T00:00:00.000Z",
+  "recipeName": "Sulong Switch Standard",
+  "versionNumber": 1,
+  "doseG": 15,
+  "waterG": 240,
+  "waterTempC": null,
+  "grindDescription": "Medium-fine",
+  "finishSecondsMin": 195,
+  "finishSecondsMax": 225,
+  "steps": [
+    {
+      "kind": "pour",
+      "startSeconds": 0,
+      "targetWeightG": 30,
+      "tempC": null,
+      "valve": "closed",
+      "note": "Lever closed. Bloom."
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 45,
+      "targetWeightG": 120,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 90,
+      "targetWeightG": 210,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "pour",
+      "startSeconds": 120,
+      "targetWeightG": 240,
+      "tempC": null,
+      "valve": null,
+      "note": ""
+    },
+    {
+      "kind": "drawdown",
+      "startSeconds": 135,
+      "targetWeightG": null,
+      "tempC": null,
+      "valve": "open",
+      "note": "Open the lever."
+    }
+  ],
+  "coffee": null,
+  "espresso": null
+}
