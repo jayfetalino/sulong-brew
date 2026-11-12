@@ -49,4 +49,5 @@ For each project, open **Settings**, then **Builds** (or **Branch control**), an
 - Each browser or home-screen app has its own data. The Home Screen app on your iPhone starts empty. Use Backup to export from one place and import into the other.
 - The lab address is public but empty of data, and is hidden from search engines. Do not share it as if it were private.
 - Do not print QR codes yet. The `pages.dev` address would be hard to change later. Decide on a domain first.
+- If a Home Screen shortcut shows just a letter instead of the logo, iPhone could not load an icon when you added it. Delete the shortcut, reload the page in Safari, and add it again. iPhone reads the icon at the moment you tap Add to Home Screen and then keeps it.
 - If a deploy fails, open the project, then **Deployments**, then the failed one, and read the build log. Send it to me.
