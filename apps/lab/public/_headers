@@ -5,6 +5,12 @@
   Referrer-Policy: no-referrer
   X-Robots-Tag: noindex, nofollow
 
+# App icons are not pages, so they do not need the search-engine rule above.
+/icons/*
+  ! X-Robots-Tag
+/apple-touch-icon*.png
+  ! X-Robots-Tag
+
 # Files in /assets have a fingerprint in their name, so they can be cached for a year.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
