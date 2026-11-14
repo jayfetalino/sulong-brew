@@ -19,6 +19,10 @@ npm run build -w sulong-guide    # static files in apps/guide/dist
 
 Every file in `src/snapshots/` is one recipe. The number at the start of the file name sets the order on the page, and the rest becomes the link (`04-the-still-pour.json` is `/#the-still-pour`). Add a file to publish a recipe, delete it to unpublish. In the lab repo, also add the file to the list in `packages/core/src/guideSnapshot.test.ts`, so it is checked against the seed.
 
+## The "Measure your brew" section
+
+The words and the worked example are in `src/measure.ts`. It names no product, and gives no target ranges. Tests enforce both until the owner decides otherwise (for example, to name a refractometer). The example is calculated from the formula, not typed in.
+
 ## What is in the snapshot
 
 Recipe name and version, dose, water, water temperature, grind in words, finish window, the steps, and (when known) the coffee name, roast level and roast date. It never contains grinder clicks, ids, brews, ratings or roast weights. The lab builds snapshots with `createGuideSnapshot` in `packages/core`, which copies an explicit list of fields.
