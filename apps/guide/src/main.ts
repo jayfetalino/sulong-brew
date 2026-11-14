@@ -5,6 +5,7 @@ import '@fontsource/ibm-plex-mono/400.css';
 import './styles.css';
 import logoUrl from './assets/sulong-roastery-v3-sticker.svg';
 import { h } from './dom';
+import { MEASURE, exampleLine } from './measure';
 import { RECIPES, findRecipeIndex } from './recipes';
 import { nextStepAfter, stepIndexAt } from './timer';
 import type { GuideSnapshot, TempUnit, WeightUnit } from './types';
@@ -275,6 +276,33 @@ function renderRecipePicker(): HTMLElement | null {
   );
 }
 
+/** "Measure your brew": what TDS and extraction yield are, with one worked example. */
+function renderMeasureSection(): HTMLElement {
+  return h(
+    'section',
+    { class: 'measure', attrs: { 'aria-labelledby': 'measure-heading' } },
+    h('h2', { text: MEASURE.heading, attrs: { id: 'measure-heading' } }),
+    h('p', { text: MEASURE.intro }),
+    h(
+      'dl',
+      { class: 'measure-terms' },
+      ...MEASURE.items.flatMap((item) => [
+        h('dt', { text: item.term }),
+        h('dd', { text: item.detail }),
+      ]),
+    ),
+    h(
+      'div',
+      { class: 'formula' },
+      h('span', { class: 'formula-label', text: MEASURE.formulaLabel }),
+      h('span', { class: 'formula-text', text: `= ${MEASURE.formula}` }),
+      h('span', { class: 'formula-label', text: MEASURE.exampleLabel }),
+      h('span', { class: 'formula-text', text: exampleLine() }),
+    ),
+    h('p', { class: 'finish', text: MEASURE.note }),
+  );
+}
+
 function renderFilterPanel(): HTMLElement {
   const finish =
     snapshot.finishSecondsMin !== null && snapshot.finishSecondsMax !== null
@@ -289,6 +317,7 @@ function renderFilterPanel(): HTMLElement {
     h('h2', { text: 'Steps' }),
     renderSteps(),
     finish ? h('p', { class: 'finish', text: finish }) : null,
+    renderMeasureSection(),
   );
 }
 
