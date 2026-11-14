@@ -86,7 +86,7 @@ iPhone 17 Pro, MacBook. Hario V60 and Switch. Eureka Oro Mignon (espresso), Time
 Refractometer integration (DiFluid R2), in order. Jay does not own an R2 yet, and DiFluid publishes no public Bluetooth protocol (see `docs/protocols/difluid-r2.md`, all TBD):
 
 - LAB-10 `packages/drivers`: `Refractometer` interface, labelled simulated device, `bluetoothSupport()`, shared contract test (done)
-- LAB-11 lab brew form "Read from refractometer" using the demo device, `tdsSource` on Brew, visible "Demo reading" badge
+- LAB-11 lab brew form "Read from refractometer" using the demo device, `tdsSource` on Brew, visible "Demo reading" badge (done)
 - LAB-12 public guide section "Measure your brew" (formula and the 310 g / 1.41 % / 20 g = 21.9 % example, no Bluetooth, neutral wording)
 - Outreach pack: `docs/partners/difluid-outreach.md`, a draft for Jay to send (Claude never sends it). Send only the public guide, disclose any discount, ask DiFluid for their protocol or SDK
 - LAB-13 real DiFluid R2 driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
