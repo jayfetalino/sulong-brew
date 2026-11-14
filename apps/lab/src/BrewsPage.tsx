@@ -99,11 +99,17 @@ export function BrewsPage() {
                       <span class="stat-label">TDS</span>
                       <span class="stat-value">
                         {brew.tdsPercent === null ? 'Not set' : `${brew.tdsPercent} %`}
+                        {brew.tdsSource === 'demo' && brew.tdsPercent !== null ? ' (demo)' : ''}
                       </span>
                     </span>
                     <span>
                       <span class="stat-label">Extraction yield</span>
-                      <span class="stat-value">{formatPercent(d.summary.extractionYield)}</span>
+                      <span class="stat-value">
+                        {formatPercent(d.summary.extractionYield)}
+                        {brew.tdsSource === 'demo' && d.summary.extractionYield !== null
+                          ? ' (demo)'
+                          : ''}
+                      </span>
                     </span>
                     <span>
                       <span class="stat-label">Rating</span>
