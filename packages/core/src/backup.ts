@@ -1,6 +1,14 @@
 import { isValidDay } from './math';
 import { mergeRecords } from './merge';
-import type { Brew, Coffee, Recipe, RecipeVersion, RoastBatch } from './types';
+import {
+  TDS_SOURCES,
+  type Brew,
+  type Coffee,
+  type Recipe,
+  type RecipeVersion,
+  type RoastBatch,
+  type TdsSource,
+} from './types';
 
 export const BACKUP_APP = 'sulong-brew-lab';
 export const BACKUP_FORMAT_VERSION = 1;
@@ -82,6 +90,14 @@ function checkRecord(table: BackupTableName, r: Obj): string | null {
     case 'brews':
       if (!isText(r.recipeVersionId)) return 'missing recipeVersionId';
       if (!isText(r.roastBatchId)) return 'missing roastBatchId';
+      // Brews saved before the field existed have no tdsSource, which is fine.
+      if (
+        r.tdsSource !== undefined &&
+        r.tdsSource !== null &&
+        !TDS_SOURCES.includes(r.tdsSource as TdsSource)
+      ) {
+        return 'unreadable tdsSource';
+      }
       return typeof r.brewDate === 'string' && isValidDay(r.brewDate)
         ? null
         : 'missing or unreadable brewDate';

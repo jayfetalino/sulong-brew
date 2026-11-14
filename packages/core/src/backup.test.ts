@@ -80,6 +80,22 @@ describe('createBackup / parseBackup', () => {
     expect(parsed.ok && parsed.backup.tables.roastBatches[0]?.deletedAt).toBe(T3);
   });
 
+  it('keeps the TDS source of each brew, and accepts older brews that have none', () => {
+    const demo = { ...brew('demo-brew', T2), tdsSource: 'demo' as const };
+    const real = { ...brew('real-brew', T2), tdsSource: 'refractometer' as const };
+    const legacy = brew('legacy-brew', T2); // saved before tdsSource existed
+    const text = JSON.stringify(createBackup(tables({ brews: [demo, real, legacy] })));
+    const parsed = parseBackup(text);
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.backup.tables.brews.map((b) => b.tdsSource)).toEqual([
+        'demo',
+        'refractometer',
+        undefined,
+      ]);
+    }
+  });
+
   it('treats a missing table as empty', () => {
     const text = JSON.stringify({
       app: 'sulong-brew-lab',
@@ -124,6 +140,11 @@ describe('parseBackup rejects bad files', () => {
       'a brew with no roast batch',
       wrap({ brews: [{ ...brew('x', T1), roastBatchId: '' }] }),
       /roastBatchId/,
+    ],
+    [
+      'a brew with an unknown tdsSource',
+      wrap({ brews: [{ ...brew('x', T1), tdsSource: 'bluetooth-magic' }] }),
+      /tdsSource/,
     ],
     ['a repeated id', wrap({ roastBatches: [batch('b1', T1), batch('b1', T2)] }), /repeated id/],
   ])('rejects %s', (_name, text, message) => {

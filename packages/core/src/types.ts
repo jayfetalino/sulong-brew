@@ -31,6 +31,14 @@ export interface RoastBatch extends BaseRecord {
   notes: string;
 }
 
+/**
+ * manual: typed by hand. refractometer: read from a real device.
+ * demo: made up by the simulated device, never a real measurement.
+ */
+export type TdsSource = 'manual' | 'refractometer' | 'demo';
+
+export const TDS_SOURCES: readonly TdsSource[] = ['manual', 'refractometer', 'demo'];
+
 export type StepKind = 'pour' | 'pause' | 'steep' | 'drawdown';
 export type ValveState = 'open' | 'closed';
 
@@ -86,8 +94,13 @@ export interface Brew extends BaseRecord {
   waterTempC: number | null;
   /** Grinder clicks actually used. Null when not recorded. */
   grindClicks: number | null;
-  /** TDS in percent, typed by hand. */
+  /** TDS in percent, typed by hand or read from a refractometer. */
   tdsPercent: number | null;
+  /**
+   * Where the TDS number came from. Missing on brews saved before this field existed,
+   * which means it was typed by hand. Null when there is no TDS.
+   */
+  tdsSource?: TdsSource | null;
   /** Overall score, 1 to 5 in half steps. Null when not rated. */
   rating: number | null;
   /** Optional cupping-style scores, 1 to 5 in half steps, keyed by attribute id. */

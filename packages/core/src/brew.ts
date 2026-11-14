@@ -1,6 +1,6 @@
 import { daysOffRoast, extractionYield, isValidDay } from './math';
 import { parseDuration } from './recipeVersion';
-import type { Brew } from './types';
+import { TDS_SOURCES, type Brew, type TdsSource } from './types';
 
 /** The editable part of a Brew (everything except id and timestamps). */
 export type BrewFields = Omit<Brew, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
@@ -28,6 +28,12 @@ export interface BrewForm {
   waterTempC: string;
   grindClicks: string;
   tdsPercent: string;
+  /**
+   * Where the TDS text came from. '' means not set: a typed TDS is then saved as 'manual'.
+   * The screen sets this to 'demo' or 'refractometer' after a reading, and back to 'manual'
+   * if the number is typed over.
+   */
+  tdsSource: TdsSource | '';
   /** '' means not rated. */
   rating: string;
   /** Attribute id to score text. A missing or empty entry means not rated. */
@@ -101,6 +107,13 @@ export function parseBrewForm(form: BrewForm): BrewParseResult {
     errors.tdsPercent = 'Enter a TDS between 0 and 30, or leave empty';
   }
 
+  if (form.tdsSource !== '' && !TDS_SOURCES.includes(form.tdsSource)) {
+    errors.tdsSource = 'Unknown TDS source';
+  }
+  // A source only makes sense with a TDS. A typed TDS with no source recorded counts as typed by hand.
+  const tdsSource: TdsSource | null =
+    tds === null || Number.isNaN(tds) ? null : form.tdsSource === '' ? 'manual' : form.tdsSource;
+
   const rating = optionalNumber(form.rating);
   if (rating !== null && (Number.isNaN(rating) || !isRatingValue(rating))) {
     errors.rating = 'Pick a score from 1 to 5';
@@ -128,6 +141,7 @@ export function parseBrewForm(form: BrewForm): BrewParseResult {
       waterTempC: temp,
       grindClicks: clicks,
       tdsPercent: tds,
+      tdsSource,
       rating,
       attributeRatings,
       tags: parseTags(form.tags),
