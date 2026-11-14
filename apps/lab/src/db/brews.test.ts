@@ -40,6 +40,11 @@ describe('saveBrew', () => {
     expect(stored?.createdAt).toBe('2026-11-09T12:00:00.000Z');
   });
 
+  it('stores where the TDS came from', async () => {
+    const saved = await saveBrew(db, { ...fields, tdsSource: 'demo' });
+    expect((await db.brews.get(saved.id))?.tdsSource).toBe('demo');
+  });
+
   it('edits in place: same id and createdAt, newer updatedAt', async () => {
     const first = await saveBrew(db, fields, undefined, new Date('2026-11-09T12:00:00Z'));
     const edited = await saveBrew(

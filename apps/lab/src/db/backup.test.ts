@@ -79,6 +79,25 @@ describe('export then import', () => {
     expect(await phone.brews.get(brew.id)).toEqual(brew);
   });
 
+  it('keeps the TDS source, so a demo reading stays marked as demo on the other device', async () => {
+    const batch = await saveRoastBatch(
+      mac,
+      batchFields,
+      undefined,
+      new Date('2026-11-09T10:00:00Z'),
+    );
+    const brew = await saveBrew(
+      mac,
+      { ...brewFields(batch.id), tdsSource: 'demo' },
+      undefined,
+      new Date('2026-11-09T11:00:00Z'),
+    );
+
+    await applyImport(phone, await transfer(mac));
+
+    expect((await phone.brews.get(brew.id))?.tdsSource).toBe('demo');
+  });
+
   it('the seeds on both devices do not duplicate', async () => {
     const merge = await applyImport(phone, await transfer(mac));
     expect(merge.totals.added).toBe(0);

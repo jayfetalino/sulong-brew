@@ -12,6 +12,7 @@ const valid: BrewForm = {
   waterTempC: '91',
   grindClicks: '24',
   tdsPercent: '1.41',
+  tdsSource: '',
   rating: '4.5',
   attributeRatings: { sweetness: '4', acidity: '3.5', body: '' },
   tags: 'Jasmine, bright',
@@ -43,6 +44,7 @@ describe('parseBrewForm', () => {
         waterTempC: 91,
         grindClicks: 24,
         tdsPercent: 1.41,
+        tdsSource: 'manual',
         rating: 4.5,
         attributeRatings: { sweetness: 4, acidity: 3.5 },
         tags: ['jasmine', 'bright'],
@@ -111,6 +113,33 @@ describe('parseBrewForm', () => {
   it('rejects an attribute score outside 1 to 5 in half steps', () => {
     const result = parseBrewForm({ ...valid, attributeRatings: { sweetness: '7' } });
     expect(result.ok).toBe(false);
+  });
+});
+
+describe('parseBrewForm: where the TDS came from', () => {
+  it('records a typed TDS with no source as manual', () => {
+    const result = parseBrewForm({ ...valid, tdsPercent: '1.41', tdsSource: '' });
+    expect(result.ok && result.value.tdsSource).toBe('manual');
+  });
+
+  it.each(['demo', 'refractometer', 'manual'] as const)('keeps the source %s', (source) => {
+    const result = parseBrewForm({ ...valid, tdsSource: source });
+    expect(result.ok && result.value.tdsSource).toBe(source);
+  });
+
+  it('has no source when there is no TDS, even if one was set', () => {
+    const result = parseBrewForm({ ...valid, tdsPercent: '', tdsSource: 'demo' });
+    expect(result.ok && result.value.tdsPercent).toBeNull();
+    expect(result.ok && result.value.tdsSource).toBeNull();
+  });
+
+  it('rejects a source it does not know', () => {
+    const result = parseBrewForm({
+      ...valid,
+      tdsSource: 'bluetooth-magic' as unknown as BrewForm['tdsSource'],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors.tdsSource).toBeDefined();
   });
 });
 

@@ -17,6 +17,7 @@ import {
 import { db } from './db';
 import { deleteBrew, saveBrew } from './db/brews';
 import { todayLocal } from './format';
+import { RefractometerPanel } from './RefractometerPanel';
 
 interface Props {
   recipes: Recipe[];
@@ -53,6 +54,8 @@ function initialValues(
       waterTempC: text(brew.waterTempC),
       grindClicks: text(brew.grindClicks),
       tdsPercent: text(brew.tdsPercent),
+      // Brews saved before this field existed have no source, which means typed by hand.
+      tdsSource: brew.tdsPercent === null ? '' : (brew.tdsSource ?? 'manual'),
       rating: text(brew.rating),
       attributeRatings: Object.fromEntries(
         Object.entries(brew.attributeRatings).map(([k, v]) => [k, String(v)]),
@@ -73,6 +76,7 @@ function initialValues(
     waterTempC: startVersion ? text(startVersion.waterTempC) : '',
     grindClicks: startVersion ? text(startVersion.grindClicks) : '',
     tdsPercent: '',
+    tdsSource: '',
     rating: '',
     attributeRatings: {},
     tags: '',
@@ -289,15 +293,42 @@ export function BrewForm({
             type="text"
             inputMode="decimal"
             value={values.tdsPercent}
-            onInput={(e) => set('tdsPercent', value(e))}
+            onInput={(e) => {
+              // Typing over a reading means the number is now typed by hand.
+              const typed = value(e);
+              setValues((f) => ({
+                ...f,
+                tdsPercent: typed,
+                tdsSource: typed.trim() === '' ? '' : 'manual',
+              }));
+            }}
           />
           {error('tdsPercent')}
         </label>
       </div>
 
+      {values.tdsSource === 'demo' && (
+        <p class="demo-note">
+          <span class="badge demo">Demo reading</span> This TDS was made up by the demo device, not
+          measured.
+        </p>
+      )}
+      {values.tdsSource === 'refractometer' && (
+        <p class="data-line">TDS read from the refractometer.</p>
+      )}
+
       <p class="data-line">
-        Extraction yield: {ey === null ? 'enter yield and TDS' : `${ey.toFixed(1)} %`}
+        Extraction yield:{' '}
+        {ey === null
+          ? 'enter yield and TDS'
+          : `${ey.toFixed(1)} %${values.tdsSource === 'demo' ? ' (from a demo reading)' : ''}`}
       </p>
+
+      <RefractometerPanel
+        onReading={(tdsPercent, source) =>
+          setValues((f) => ({ ...f, tdsPercent: String(tdsPercent), tdsSource: source }))
+        }
+      />
 
       <div class="row">
         <label>
