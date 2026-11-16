@@ -36,6 +36,6 @@ Everything below is TBD until DiFluid answers.
 
 ## Test plan once the protocol is known
 
-- The driver must pass a shared scale contract test (written in LAB-14), as the R2 driver does for refractometers.
+- The driver must pass the shared scale contract test in `packages/drivers/src/testing/scaleContract.ts` (written in LAB-14), as the R2 driver does for refractometers.
 - The parser gets unit tests from DiFluid's sample packets.
 - Final proof is a real Microbalance Ti on a Mac in Chrome, then on an iPhone in Bluefy.
