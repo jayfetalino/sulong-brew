@@ -293,6 +293,58 @@ h2 {
   color: var(--color-text-muted);
 }
 
+/* Measure your brew */
+.measure {
+  margin-top: var(--space-5);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+.measure p {
+  margin: 0 0 var(--space-3);
+  line-height: 1.5;
+}
+
+.measure-terms {
+  margin: 0 0 var(--space-4);
+}
+
+.measure-terms dt {
+  margin-top: var(--space-3);
+  font-weight: 600;
+}
+
+.measure-terms dd {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.formula {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.formula-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.formula-label:not(:first-child) {
+  margin-top: var(--space-3);
+}
+
+.formula-text {
+  font-family: var(--font-data);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
 .empty {
   padding: var(--space-5);
   background: var(--color-surface);
