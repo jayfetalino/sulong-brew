@@ -93,7 +93,7 @@ Refractometer integration (DiFluid R2), in order. Jay does not own an R2 yet, an
 
 Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. Protocol unknown, see `docs/protocols/difluid-microbalance-ti.md` (all TBD):
 
-- LAB-14 `packages/drivers`: `Scale` interface, labelled simulated scale, shared contract test. No hardware needed
+- LAB-14 `packages/drivers`: `Scale` interface, labelled simulated scale, shared contract test. No hardware needed (done)
 - LAB-15 live pour guide in the lab (private app only): step cards follow the scale and show live weight against each step's target weight, with the simulated scale until a real one is connected. The public guide stays Bluetooth-free
 - LAB-16 real DiFluid Microbalance Ti driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
 
