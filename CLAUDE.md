@@ -52,7 +52,7 @@ Recipes:
 
 ## Gear (context only)
 
-iPhone 17 Pro, MacBook. Hario V60 and Switch. Eureka Oro Mignon (espresso), Timemore Chestnut S5 Pro (pour-over). Scale undecided (Bookoo Themis Ultra or DiFluid Microbalance Ti). Refractometer DiFluid R2 Extract (TDS typed by hand). Roaster Kaffelogic Nano 7.
+iPhone 17 Pro, MacBook. Hario V60 and Switch. Eureka Oro Mignon (espresso), Timemore Chestnut S5 Pro (pour-over). Scale: DiFluid Microbalance Ti (decided 2026-11-16, not yet owned). Refractometer: DiFluid R2 Extract (not yet owned; TDS is typed by hand until then). Roaster Kaffelogic Nano 7.
 
 ## Hard rules
 
@@ -88,10 +88,16 @@ Refractometer integration (DiFluid R2), in order. Jay does not own an R2 yet, an
 - LAB-10 `packages/drivers`: `Refractometer` interface, labelled simulated device, `bluetoothSupport()`, shared contract test (done)
 - LAB-11 lab brew form "Read from refractometer" using the demo device, `tdsSource` on Brew, visible "Demo reading" badge (done)
 - LAB-12 public guide section "Measure your brew" (formula and the 310 g / 1.41 % / 20 g = 21.9 % example, no Bluetooth, neutral wording) (done)
-- Outreach pack: `docs/partners/difluid-outreach.md`, a draft for Jay to send (Claude never sends it). Send only the public guide, disclose any discount, ask DiFluid for their protocol or SDK
+- Outreach: DiFluid approved a developer discount for Jay. Program terms and emails are NOT kept in this repo (unknown whether the repo is private). Anything public that names DiFluid devices must disclose the discount. Claude never sends messages for Jay. Still needed from DiFluid: Bluetooth protocol docs for the R2 and the Microbalance Ti
 - LAB-13 real DiFluid R2 driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
 
-Later, not now: Bluetooth scale driver, live guide, compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
+Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. Protocol unknown, see `docs/protocols/difluid-microbalance-ti.md` (all TBD):
+
+- LAB-14 `packages/drivers`: `Scale` interface, labelled simulated scale, shared contract test. No hardware needed
+- LAB-15 live pour guide in the lab (private app only): step cards follow the scale and show live weight against each step's target weight, with the simulated scale until a real one is connected. The public guide stays Bluetooth-free
+- LAB-16 real DiFluid Microbalance Ti driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
+
+Later, not now: compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
 
 ## Open decisions (ask Jay, never decide alone)
 
@@ -99,7 +105,7 @@ Later, not now: Bluetooth scale driver, live guide, compare view, Kaffelogic .kl
 - Logo SVG file
 - Rating attribute list (decided in ADR-008: overall 1 to 5 plus six cupping-style scores; Jay can still change the list)
 - Whether first crack is logged anywhere
-- Scale choice
+- Scale choice (decided 2026-11-16: DiFluid Microbalance Ti)
 - Domain, before printing QR codes
 - One repo or two
 - Kaffelogic facts: `.klog` `boost_load_size` is the batch-size setting, not measured green weight. There is no first-crack marker, bean name, roasted weight or notes in the file. The date 04/10/2026 is ambiguous (Oct 4 or Apr 10): ask Jay.
