@@ -2,12 +2,14 @@ import { isValidDay } from './math';
 import { mergeRecords } from './merge';
 import {
   TDS_SOURCES,
+  YIELD_SOURCES,
   type Brew,
   type Coffee,
   type Recipe,
   type RecipeVersion,
   type RoastBatch,
   type TdsSource,
+  type YieldSource,
 } from './types';
 
 export const BACKUP_APP = 'sulong-brew-lab';
@@ -97,6 +99,13 @@ function checkRecord(table: BackupTableName, r: Obj): string | null {
         !TDS_SOURCES.includes(r.tdsSource as TdsSource)
       ) {
         return 'unreadable tdsSource';
+      }
+      if (
+        r.yieldSource !== undefined &&
+        r.yieldSource !== null &&
+        !YIELD_SOURCES.includes(r.yieldSource as YieldSource)
+      ) {
+        return 'unreadable yieldSource';
       }
       return typeof r.brewDate === 'string' && isValidDay(r.brewDate)
         ? null

@@ -39,6 +39,15 @@ export type TdsSource = 'manual' | 'refractometer' | 'demo';
 
 export const TDS_SOURCES: readonly TdsSource[] = ['manual', 'refractometer', 'demo'];
 
+/**
+ * Where the yield (beverage weight) came from.
+ * manual: typed by hand. scale: read from a real scale.
+ * demo: made up by the simulated scale, never a real measurement.
+ */
+export type YieldSource = 'manual' | 'scale' | 'demo';
+
+export const YIELD_SOURCES: readonly YieldSource[] = ['manual', 'scale', 'demo'];
+
 export type StepKind = 'pour' | 'pause' | 'steep' | 'drawdown';
 export type ValveState = 'open' | 'closed';
 
@@ -89,6 +98,11 @@ export interface Brew extends BaseRecord {
   doseG: number;
   /** Beverage weight in the cup, in grams. */
   yieldG: number | null;
+  /**
+   * Where the yield came from. Missing on brews saved before this field existed, which means
+   * typed by hand. Null when there is no yield.
+   */
+  yieldSource?: YieldSource | null;
   brewSeconds: number | null;
   /** Water temperature actually used. Null when not recorded. */
   waterTempC: number | null;

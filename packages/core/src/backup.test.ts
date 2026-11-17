@@ -96,6 +96,23 @@ describe('createBackup / parseBackup', () => {
     }
   });
 
+  it('keeps the yield source of each brew, and accepts older brews that have none', () => {
+    const demo = { ...brew('demo-brew', T2), yieldSource: 'demo' as const };
+    const real = { ...brew('real-brew', T2), yieldSource: 'scale' as const };
+    const legacy = brew('legacy-brew', T2); // saved before yieldSource existed
+    const parsed = parseBackup(
+      JSON.stringify(createBackup(tables({ brews: [demo, real, legacy] }))),
+    );
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.backup.tables.brews.map((b) => b.yieldSource)).toEqual([
+        'demo',
+        'scale',
+        undefined,
+      ]);
+    }
+  });
+
   it('treats a missing table as empty', () => {
     const text = JSON.stringify({
       app: 'sulong-brew-lab',
@@ -140,6 +157,11 @@ describe('parseBackup rejects bad files', () => {
       'a brew with no roast batch',
       wrap({ brews: [{ ...brew('x', T1), roastBatchId: '' }] }),
       /roastBatchId/,
+    ],
+    [
+      'a brew with an unknown yieldSource',
+      wrap({ brews: [{ ...brew('x', T1), yieldSource: 'bluetooth-magic' }] }),
+      /yieldSource/,
     ],
     [
       'a brew with an unknown tdsSource',

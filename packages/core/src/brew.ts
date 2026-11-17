@@ -1,6 +1,6 @@
 import { daysOffRoast, extractionYield, isValidDay } from './math';
 import { parseDuration } from './recipeVersion';
-import { TDS_SOURCES, type Brew, type TdsSource } from './types';
+import { TDS_SOURCES, YIELD_SOURCES, type Brew, type TdsSource, type YieldSource } from './types';
 
 /** The editable part of a Brew (everything except id and timestamps). */
 export type BrewFields = Omit<Brew, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
@@ -24,6 +24,11 @@ export interface BrewForm {
   brewDate: string;
   doseG: string;
   yieldG: string;
+  /**
+   * Where the yield text came from. '' means not set: a typed yield is then saved as 'manual'.
+   * The screen sets 'scale' or 'demo' after a live brew, and back to 'manual' if the number is typed over.
+   */
+  yieldSource: YieldSource | '';
   brewTime: string;
   waterTempC: string;
   grindClicks: string;
@@ -86,6 +91,17 @@ export function parseBrewForm(form: BrewForm): BrewParseResult {
     errors.yieldG = 'Enter a weight above 0, or leave empty';
   }
 
+  if (form.yieldSource !== '' && !YIELD_SOURCES.includes(form.yieldSource)) {
+    errors.yieldSource = 'Unknown yield source';
+  }
+  // A source only makes sense with a yield. A typed yield with no source recorded counts as typed by hand.
+  const yieldSource: YieldSource | null =
+    yieldG === null || Number.isNaN(yieldG)
+      ? null
+      : form.yieldSource === ''
+        ? 'manual'
+        : form.yieldSource;
+
   let brewSeconds: number | null = null;
   if (form.brewTime.trim() !== '') {
     brewSeconds = parseDuration(form.brewTime);
@@ -137,6 +153,7 @@ export function parseBrewForm(form: BrewForm): BrewParseResult {
       brewDate: form.brewDate,
       doseG: dose as number,
       yieldG,
+      yieldSource,
       brewSeconds,
       waterTempC: temp,
       grindClicks: clicks,
