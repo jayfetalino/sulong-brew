@@ -96,6 +96,6 @@ DF DF 03 00 07 02 00 4F 00 02 09 3D 61    result: 0x004F = 79, so concentration 
 
 ## Test plan
 
-- The frame and result parsers get unit tests built from the documented frames above.
+- The frame and result parsers are written and tested against every documented frame (`packages/drivers/src/difluid`, ADR-015). Numbers with the top bit set are refused until the real sign is seen on a device. There is no service UUID in the code, because DiFluid does not state one.
 - The driver must pass the shared contract test in `packages/drivers/src/testing/contract.ts`.
 - Final proof is a real R2 on a Mac in Chrome, then on an iPhone in Bluefy.
