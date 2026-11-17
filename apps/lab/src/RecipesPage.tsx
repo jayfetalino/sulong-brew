@@ -8,14 +8,17 @@ import {
 } from '@sulong/core';
 import { db } from './db';
 import { deleteRecipe } from './db/recipes';
+import { setBrewDraft } from './draftStore';
 import { describeStep } from './format';
+import { LiveBrew } from './LiveBrew';
 import { RecipeEditor } from './RecipeEditor';
 import { useLive } from './useLive';
 
 type View =
   | { mode: 'list' }
   | { mode: 'detail'; recipeId: string }
-  | { mode: 'edit'; recipeId: string | null };
+  | { mode: 'edit'; recipeId: string | null }
+  | { mode: 'live'; recipeId: string; versionId: string };
 
 function summaryLine(v: RecipeVersion): string {
   const temp = v.waterTempC === null ? 'temp not set' : `${v.waterTempC} C`;
@@ -62,9 +65,29 @@ export function RecipesPage() {
     );
   }
 
+  // ---- Live brew ----
+  const liveRecipe = view.mode === 'live' ? recipeById(view.recipeId) : undefined;
+  const liveVersion =
+    view.mode === 'live' ? versions.find((v) => v.id === view.versionId) : undefined;
+  if (view.mode === 'live' && liveRecipe && liveVersion) {
+    return (
+      <LiveBrew
+        recipe={liveRecipe}
+        version={liveVersion}
+        onCancel={() => goDetail(liveRecipe.id)}
+        onFinish={(draft) => {
+          // The brew form opens on the Brews tab with these measurements filled in.
+          setBrewDraft(draft);
+          window.location.hash = '#/brews';
+        }}
+      />
+    );
+  }
+
   // ---- Detail ----
   // If the recipe has just been deleted, this falls through to the list below.
-  const detailRecipe = view.mode === 'detail' ? recipeById(view.recipeId) : undefined;
+  const detailRecipe =
+    view.mode === 'detail' || view.mode === 'live' ? recipeById(view.recipeId) : undefined;
   if (detailRecipe) {
     return (
       <RecipeDetail
@@ -77,6 +100,7 @@ export function RecipesPage() {
           setBaseVersionId(fromVersionId);
           setView({ mode: 'edit', recipeId: detailRecipe.id });
         }}
+        onBrewLive={(versionId) => setView({ mode: 'live', recipeId: detailRecipe.id, versionId })}
         onDeleted={() => setView({ mode: 'list' })}
       />
     );
@@ -133,6 +157,7 @@ interface DetailProps {
   onShowVersion: (id: string) => void;
   onBack: () => void;
   onEdit: (fromVersionId: string) => void;
+  onBrewLive: (versionId: string) => void;
   onDeleted: () => void;
 }
 
@@ -143,6 +168,7 @@ function RecipeDetail({
   onShowVersion,
   onBack,
   onEdit,
+  onBrewLive,
   onDeleted,
 }: DetailProps) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -238,7 +264,10 @@ function RecipeDetail({
           </ol>
 
           <div class="stack">
-            <button type="button" class="button primary" onClick={() => onEdit(shown.id)}>
+            <button type="button" class="button primary" onClick={() => onBrewLive(shown.id)}>
+              Brew with live guide
+            </button>
+            <button type="button" class="button" onClick={() => onEdit(shown.id)}>
               Edit as new version
             </button>
 
