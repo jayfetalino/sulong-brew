@@ -106,6 +106,6 @@ Device status codes: 0 Power down, 1 Charging, 2 Low power mode 1, 3 Low-battery
 
 ## Test plan
 
-- The frame and weight parsers get unit tests built from the documented frames above.
+- The frame and weight parsers are written and tested against every documented frame (`packages/drivers/src/difluid`, ADR-015). Weights with the top bit set are refused until the real sign is seen on a device.
 - The driver must pass the shared scale contract test in `packages/drivers/src/testing/scaleContract.ts`.
 - Final proof is a real Microbalance Ti on a Mac in Chrome, then on an iPhone in Bluefy.

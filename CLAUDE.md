@@ -95,6 +95,7 @@ Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. 
 
 - LAB-14 `packages/drivers`: `Scale` interface, labelled simulated scale, shared contract test. No hardware needed (done)
 - LAB-15 live pour guide in the lab (private app only): step cards follow the scale and show live weight against each step's target weight, with the simulated scale until a real one is connected. The public guide stays Bluetooth-free
+- LAB-17 DiFluid frame codec and message parsers for the Ti and R2 in `packages/drivers/src/difluid`, tested against every frame written in DiFluid's documents. Numbers with the top bit set are refused because DiFluid does not state the sign (done, see ADR-015)
 - LAB-16 real DiFluid Microbalance Ti driver: written from the official documents, but cannot be trusted until tested on a real Ti. Flag it as not verified until then
 
 Later, not now: compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
