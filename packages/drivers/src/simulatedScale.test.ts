@@ -104,6 +104,40 @@ describe('SimulatedScale', () => {
     expect(shown()).toBe(70);
   });
 
+  it('adds weight by hand, counted from the display after a tare', async () => {
+    const { scale, shown } = steadyScale();
+    await scale.connect();
+    scale.setWeight(30);
+    await scale.tare();
+    scale.addWeight(10);
+    expect(shown()).toBe(10);
+    scale.addWeight(50);
+    expect(shown()).toBe(60);
+    scale.addWeight(-20);
+    expect(shown()).toBe(40);
+  });
+
+  it('adding weight in the middle of a pour stops the pour where it is', async () => {
+    const { scale, shown, advance } = steadyScale();
+    await scale.connect();
+    scale.pourTo(100, 1000);
+    advance(500);
+    scale.addWeight(10);
+    advance(5000);
+    expect(shown()).toBe(60);
+  });
+
+  it('can be told what to show, even after a tare', async () => {
+    const { scale, shown } = steadyScale();
+    await scale.connect();
+    scale.setWeight(25);
+    await scale.tare();
+    scale.setShownWeight(0);
+    expect(shown()).toBe(0);
+    scale.setShownWeight(123.4);
+    expect(shown()).toBeCloseTo(123.4, 10);
+  });
+
   it('follows the pour weights of The Sulong Pour: 40, 220, 310', async () => {
     const { scale, shown, advance } = steadyScale();
     await scale.connect();
