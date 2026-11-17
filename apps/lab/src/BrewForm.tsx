@@ -7,6 +7,7 @@ import {
   parseBrewForm,
   roundTo,
   type Brew,
+  type BrewDraft,
   type BrewErrors,
   type BrewForm as FormValues,
   type Coffee,
@@ -30,6 +31,8 @@ interface Props {
   brew?: Brew;
   /** For a new brew, start from the same recipe version and roast batch as this one. */
   lastBrew?: Brew;
+  /** For a new brew that comes from a live brew: the measured values to start with. */
+  draft?: BrewDraft;
   onDone: () => void;
 }
 
@@ -42,6 +45,7 @@ function initialValues(
   lastBrew: Brew | undefined,
   versions: RecipeVersion[],
   batches: RoastBatch[],
+  draft?: BrewDraft,
 ): FormValues {
   if (brew) {
     return {
@@ -50,6 +54,8 @@ function initialValues(
       brewDate: brew.brewDate,
       doseG: String(brew.doseG),
       yieldG: text(brew.yieldG),
+      // Brews saved before this field existed have no source, which means typed by hand.
+      yieldSource: brew.yieldG === null ? '' : (brew.yieldSource ?? 'manual'),
       brewTime: brew.brewSeconds === null ? '' : formatDuration(brew.brewSeconds),
       waterTempC: text(brew.waterTempC),
       grindClicks: text(brew.grindClicks),
@@ -64,6 +70,27 @@ function initialValues(
       notes: brew.notes,
     };
   }
+  // A live brew hands over its measurements. The roast batch is still chosen by the person.
+  if (draft) {
+    const startBatch = batches.find((b) => b.id === lastBrew?.roastBatchId) ?? batches[0];
+    return {
+      recipeVersionId: draft.recipeVersionId,
+      roastBatchId: startBatch?.id ?? '',
+      brewDate: todayLocal(),
+      doseG: String(draft.doseG),
+      yieldG: text(draft.yieldG),
+      yieldSource: draft.yieldSource ?? '',
+      brewTime: draft.brewSeconds === null ? '' : formatDuration(draft.brewSeconds),
+      waterTempC: text(draft.waterTempC),
+      grindClicks: text(draft.grindClicks),
+      tdsPercent: '',
+      tdsSource: '',
+      rating: '',
+      attributeRatings: {},
+      tags: '',
+      notes: '',
+    };
+  }
   const startVersion = versions.find((v) => v.id === lastBrew?.recipeVersionId);
   const startBatch = batches.find((b) => b.id === lastBrew?.roastBatchId) ?? batches[0];
   return {
@@ -72,6 +99,7 @@ function initialValues(
     brewDate: todayLocal(),
     doseG: startVersion ? String(startVersion.doseG) : '',
     yieldG: '',
+    yieldSource: '',
     brewTime: '',
     waterTempC: startVersion ? text(startVersion.waterTempC) : '',
     grindClicks: startVersion ? text(startVersion.grindClicks) : '',
@@ -108,10 +136,11 @@ export function BrewForm({
   knownTags,
   brew,
   lastBrew,
+  draft,
   onDone,
 }: Props) {
   const [values, setValues] = useState<FormValues>(() =>
-    initialValues(brew, lastBrew, versions, batches),
+    initialValues(brew, lastBrew, versions, batches, draft),
   );
   const [errors, setErrors] = useState<BrewErrors>({});
   const [saving, setSaving] = useState(false);
@@ -174,6 +203,11 @@ export function BrewForm({
       ? roundTo(extractionYield(beverage, tds, dose), 1)
       : null;
 
+  // The extraction yield is only as real as the numbers behind it.
+  const demoCount = Number(values.yieldSource === 'demo') + Number(values.tdsSource === 'demo');
+  const demoNote =
+    demoCount === 2 ? ' (from demo readings)' : demoCount === 1 ? ' (from a demo reading)' : '';
+
   const addTag = (tag: string) => {
     const existing = values.tags
       .split(',')
@@ -217,7 +251,7 @@ export function BrewForm({
 
   return (
     <form class="form" onSubmit={onSubmit} noValidate>
-      <h2>{brew ? 'Edit brew' : 'New brew'}</h2>
+      <h2>{brew ? 'Edit brew' : draft ? 'New brew from your live pour' : 'New brew'}</h2>
 
       {noSetup && !brew && (
         <p class="muted">
@@ -275,11 +309,29 @@ export function BrewForm({
             type="text"
             inputMode="decimal"
             value={values.yieldG}
-            onInput={(e) => set('yieldG', value(e))}
+            onInput={(e) => {
+              // Typing over a weight from the scale means the number is now typed by hand.
+              const typed = value(e);
+              setValues((f) => ({
+                ...f,
+                yieldG: typed,
+                yieldSource: typed.trim() === '' ? '' : 'manual',
+              }));
+            }}
           />
           {error('yieldG')}
         </label>
       </div>
+
+      {values.yieldSource === 'demo' && (
+        <p class="demo-note">
+          <span class="badge demo">Demo reading</span> This yield came from the demo scale, not a
+          real weight.
+        </p>
+      )}
+      {values.yieldSource === 'scale' && (
+        <p class="data-line">Yield taken from the scale at the end of the pour.</p>
+      )}
 
       <div class="row">
         <label>
@@ -318,10 +370,7 @@ export function BrewForm({
       )}
 
       <p class="data-line">
-        Extraction yield:{' '}
-        {ey === null
-          ? 'enter yield and TDS'
-          : `${ey.toFixed(1)} %${values.tdsSource === 'demo' ? ' (from a demo reading)' : ''}`}
+        Extraction yield: {ey === null ? 'enter yield and TDS' : `${ey.toFixed(1)} %${demoNote}`}
       </p>
 
       <RefractometerPanel
