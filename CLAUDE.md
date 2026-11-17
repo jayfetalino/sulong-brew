@@ -83,19 +83,19 @@ iPhone 17 Pro, MacBook. Hario V60 and Switch. Eureka Oro Mignon (espresso), Time
 - LAB-8 JSON export and merge-import
 - LAB-9 PWA install and free HTTPS deploy (verify free-tier limits first, record the choice in an ADR)
 
-Refractometer integration (DiFluid R2), in order. Jay does not own an R2 yet, and DiFluid publishes no public Bluetooth protocol (see `docs/protocols/difluid-r2.md`, all TBD):
+Refractometer integration (DiFluid R2), in order. Jay does not own an R2 yet. DiFluid's official open-source SDK documentation (MIT, https://github.com/DiFluid/difluid-sdk-demo) describes the protocol; what it says, what it does not state, and what must be verified on a real device are in `docs/protocols/` (`difluid-frame-format.md`, `difluid-r2.md`, `difluid-microbalance-ti.md`). Known gap: the R2's Bluetooth service UUID is not stated in the official documents. Build only from those documents, never from third-party projects:
 
 - LAB-10 `packages/drivers`: `Refractometer` interface, labelled simulated device, `bluetoothSupport()`, shared contract test (done)
 - LAB-11 lab brew form "Read from refractometer" using the demo device, `tdsSource` on Brew, visible "Demo reading" badge (done)
 - LAB-12 public guide section "Measure your brew" (formula and the 310 g / 1.41 % / 20 g = 21.9 % example, no Bluetooth, neutral wording) (done)
-- Outreach: DiFluid approved a developer discount for Jay. Program terms and emails are NOT kept in this repo (unknown whether the repo is private). Anything public that names DiFluid devices must disclose the discount. Claude never sends messages for Jay. Still needed from DiFluid: Bluetooth protocol docs for the R2 and the Microbalance Ti
-- LAB-13 real DiFluid R2 driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
+- Outreach: DiFluid approved a developer discount for Jay. Program terms and emails are NOT kept in this repo (unknown whether the repo is private). Anything public that names DiFluid devices must disclose the discount. Claude never sends messages for Jay. DiFluid's rebate process (per DiFluid, 2026-11-16): after the project is officially launched, Jay shares development results (a project link or a demo video); after review and approval DiFluid sends a link to submit the rebate application. Still needed from DiFluid: the R2's Bluetooth service UUID (and advertised name)
+- LAB-13 real DiFluid R2 driver: written from the official documents, but cannot be trusted until tested on a real R2 (and the service UUID gap is closed). Flag it as not verified until then
 
-Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. Protocol unknown, see `docs/protocols/difluid-microbalance-ti.md` (all TBD):
+Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. Protocol documented by DiFluid (service `000000DD-...`, characteristic AA01), see `docs/protocols/difluid-microbalance-ti.md`; sign of the weight and several other details are not stated and must be verified on a real device:
 
 - LAB-14 `packages/drivers`: `Scale` interface, labelled simulated scale, shared contract test. No hardware needed (done)
 - LAB-15 live pour guide in the lab (private app only): step cards follow the scale and show live weight against each step's target weight, with the simulated scale until a real one is connected. The public guide stays Bluetooth-free
-- LAB-16 real DiFluid Microbalance Ti driver: BLOCKED until DiFluid supplies the protocol and Jay has a device. Build only from documented values
+- LAB-16 real DiFluid Microbalance Ti driver: written from the official documents, but cannot be trusted until tested on a real Ti. Flag it as not verified until then
 
 Later, not now: compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
 
