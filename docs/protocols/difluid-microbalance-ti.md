@@ -51,7 +51,8 @@ Func `3`, Cmd `0`. The documented example has data length `0x0D` (13 bytes):
 
 Worked example from DiFluid: Data0-3 `00 00 02 F8` = 760, weight 76 g. Data8-11 `00 0A 27 B0` = 665520.
 
-- **Sign of the weight: Not stated.** A weight below zero (for example after lifting a vessel off a tared scale) may or may not be sent as a two's-complement number. Until verified on a device, a driver must refuse any weight whose top bit is set instead of guessing.
+- **Sign of the weight: not stated in the public document.** A weight below zero (for example after lifting a vessel off a tared scale) may or may not be sent as a two's-complement number.
+- **From DiFluid support (email, 2026-11-18, not published):** "Negative weight values are transmitted in the same way as normal weight values." This says there is no special marker or separate field, but it does not name the encoding. The usual meaning is a signed 32-bit number (two's complement), which would make `FF FF FF F6` the weight -10, so -1.0 g. That reading is **an inference, not yet confirmed**. Until it is confirmed on a real scale, the driver (LAB-16) still refuses any weight whose top bit is set and shows a problem message. Adopting the signed reading is a pending change, to be made together with a check on the device (see the checklist).
 - **A "stable" flag: Not stated.** There is none in the documented fields.
 - **Unit:** the driver should read Data12 and should be able to set grams (see commands).
 
