@@ -6,7 +6,8 @@ import { RoastBatchForm } from './RoastBatchForm';
 import { useLive } from './useLive';
 
 export function RoastsPage() {
-  const coffees = useLive(() => db.coffees.orderBy('name').toArray());
+  // All coffees, including deleted ones, so old batches can still show their coffee's name.
+  const allCoffees = useLive(() => db.coffees.orderBy('name').toArray());
   const batches = useLive(() =>
     db.roastBatches
       .orderBy('roastDate')
@@ -17,7 +18,9 @@ export function RoastsPage() {
   // 'new' = creating, a batch = editing it, null = showing the list.
   const [editing, setEditing] = useState<'new' | RoastBatch | null>(null);
 
-  if (!coffees || !batches) return <p class="muted">Loading</p>;
+  if (!allCoffees || !batches) return <p class="muted">Loading</p>;
+  // Only coffees that are not deleted can be picked for a new batch.
+  const coffees = allCoffees.filter((c) => !isDeleted(c));
 
   if (editing) {
     return (
@@ -30,7 +33,7 @@ export function RoastsPage() {
   }
 
   const today = todayLocal();
-  const coffeeName = (id: string) => coffees.find((c) => c.id === id)?.name ?? 'Unknown coffee';
+  const coffeeName = (id: string) => allCoffees.find((c) => c.id === id)?.name ?? 'Unknown coffee';
 
   return (
     <>

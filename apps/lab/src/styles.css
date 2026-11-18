@@ -573,6 +573,25 @@ h2 {
   height: 20px;
 }
 
+.form label.check {
+  display: flex;
+  color: var(--color-text);
+}
+
+/* A text-style button, for a small action under a field. */
+.link-button {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 0.9375rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .form-label {
   display: grid;
   gap: var(--space-1);

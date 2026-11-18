@@ -98,6 +98,10 @@ Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. 
 - LAB-17 DiFluid frame codec and message parsers for the Ti and R2 in `packages/drivers/src/difluid`, tested against every frame written in DiFluid's documents. Numbers with the top bit set are refused because DiFluid does not state the sign (done, see ADR-015)
 - LAB-16 real DiFluid Microbalance Ti driver (`packages/drivers/src/difluid/tiScale.ts`, Web Bluetooth transport, listed in the lab as "experimental"): written from the official documents and tested with fakes only. NOT verified on a real Ti. The experimental label (`TI_EXPERIMENTAL_NOTE`) stays until Jay and Claude test it together; see ADR-016 and the checklist in `docs/protocols/difluid-microbalance-ti.md` (done, unverified)
 
+Gaps found while using the lab:
+
+- LAB-18 add, edit and delete your own coffees from the roast form (name, usual roast level, espresso flag; a coffee in use cannot be deleted), see ADR-018 (done)
+
 Later, not now: compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
 
 ## Open decisions (ask Jay, never decide alone)
