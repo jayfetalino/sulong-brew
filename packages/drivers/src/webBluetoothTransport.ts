@@ -41,14 +41,33 @@ interface DeviceLike {
 }
 
 export interface BluetoothLike {
-  requestDevice(options: { filters: { services: string[] }[] }): Promise<DeviceLike>;
+  requestDevice(options: {
+    filters: { services: string[]; namePrefix?: string }[];
+  }): Promise<DeviceLike>;
 }
+
+/** Words for the device, so messages say "scale" or "refractometer" as fits. */
+export interface DeviceWords {
+  /** What the device is, for example "scale" or "refractometer". */
+  noun: string;
+  /** Its model, for example "Microbalance Ti" or "R2 Extract". */
+  model: string;
+}
+
+const SCALE_WORDS: DeviceWords = { noun: 'scale', model: 'Microbalance Ti' };
 
 export interface WebBluetoothTransportOptions {
   /** The Bluetooth service the device advertises, used to find it. */
   serviceUuid: string;
   /** The characteristic that carries the messages. */
   characteristicUuid: string;
+  /**
+   * Only list devices whose name starts with this. Needed when two DiFluid devices share a
+   * service, as the R2 and the Microbalance Ti do.
+   */
+  namePrefix?: string;
+  /** Words for messages. Default: a Microbalance Ti scale. */
+  words?: DeviceWords;
   /** For tests: a stand-in for navigator.bluetooth. */
   bluetooth?: BluetoothLike;
 }
@@ -56,7 +75,7 @@ export interface WebBluetoothTransportOptions {
 const aborted = () => new ScaleError('aborted', 'Cancelled.');
 
 /** Turns a browser Bluetooth error into a ScaleError with a message a person can act on. */
-export function mapBluetoothError(error: unknown): ScaleError {
+export function mapBluetoothError(error: unknown, words: DeviceWords = SCALE_WORDS): ScaleError {
   if (error instanceof ScaleError) return error;
   const name = (error as { name?: string } | null)?.name ?? '';
   const message = (error as { message?: string } | null)?.message ?? '';
@@ -68,18 +87,18 @@ export function mapBluetoothError(error: unknown): ScaleError {
       if (/characteristic/i.test(message)) {
         return new ScaleError(
           'unavailable',
-          "The scale's data channel was not found on that device.",
+          `The ${words.noun}'s data channel was not found on that device.`,
         );
       }
       if (/service/i.test(message)) {
         return new ScaleError(
           'unavailable',
-          'That device does not offer the DiFluid scale service. Is it a Microbalance Ti?',
+          `That device does not offer the DiFluid ${words.noun} service. Is it the ${words.model}?`,
         );
       }
       return new ScaleError(
         'unavailable',
-        'No scale was found. Make sure the Microbalance Ti is on and close by, then try again.',
+        `No ${words.noun} was found. Make sure the ${words.model} is on and close by, then try again.`,
       );
     case 'SecurityError':
       return new ScaleError(
@@ -96,7 +115,7 @@ export function mapBluetoothError(error: unknown): ScaleError {
     case 'NetworkError':
       return new ScaleError(
         'failed',
-        'Could not connect to the scale. Make sure it is on and close by, and close other apps that may be connected to it.',
+        `Could not connect to the ${words.noun}. Make sure it is on and close by, and close other apps that may be connected to it.`,
       );
     default:
       return new ScaleError(
@@ -114,7 +133,11 @@ export class WebBluetoothTransport implements BluetoothTransport {
   private dataListeners = new Set<(bytes: Uint8Array) => void>();
   private disconnectListeners = new Set<() => void>();
 
-  constructor(private readonly options: WebBluetoothTransportOptions) {}
+  private readonly words: DeviceWords;
+
+  constructor(private readonly options: WebBluetoothTransportOptions) {
+    this.words = options.words ?? SCALE_WORDS;
+  }
 
   private readonly onValueChanged = (event: unknown): void => {
     const view = (event as { target?: { value?: DataView } | null }).target?.value;
@@ -166,11 +189,12 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
     let device: DeviceLike;
     try {
+      const { serviceUuid, namePrefix } = this.options;
       device = await bluetooth.requestDevice({
-        filters: [{ services: [this.options.serviceUuid] }],
+        filters: [{ services: [serviceUuid], ...(namePrefix ? { namePrefix } : {}) }],
       });
     } catch (error) {
-      throw mapBluetoothError(error);
+      throw mapBluetoothError(error, this.words);
     }
     if (signal?.aborted) throw aborted();
 
@@ -191,14 +215,14 @@ export class WebBluetoothTransport implements BluetoothTransport {
         gatt.disconnect();
         throw new ScaleError(
           'unavailable',
-          "The scale's data channel cannot send readings to this app (it offers no notifications).",
+          `The ${this.words.noun}'s data channel cannot send readings to this app (it offers no notifications).`,
         );
       }
       if (!p.write && !p.writeWithoutResponse) {
         gatt.disconnect();
         throw new ScaleError(
           'unavailable',
-          "The scale's data channel cannot receive commands from this app (it cannot be written to).",
+          `The ${this.words.noun}'s data channel cannot receive commands from this app (it cannot be written to).`,
         );
       }
 
@@ -215,7 +239,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
     } catch (error) {
       if (this.characteristic) await this.disconnect();
       else device.gatt?.disconnect();
-      throw mapBluetoothError(error);
+      throw mapBluetoothError(error, this.words);
     }
   }
 
@@ -240,7 +264,9 @@ export class WebBluetoothTransport implements BluetoothTransport {
 
   async write(bytes: Uint8Array): Promise<void> {
     const characteristic = this.characteristic;
-    if (!characteristic) throw new ScaleError('not-connected', 'The scale is not connected.');
+    if (!characteristic) {
+      throw new ScaleError('not-connected', `The ${this.words.noun} is not connected.`);
+    }
     // A fresh copy: the browser takes a plain buffer, and the caller may reuse its array.
     const payload = new Uint8Array(bytes);
     try {
@@ -253,7 +279,7 @@ export class WebBluetoothTransport implements BluetoothTransport {
         await characteristic.writeValue(payload);
       }
     } catch (error) {
-      throw mapBluetoothError(error);
+      throw mapBluetoothError(error, this.words);
     }
   }
 

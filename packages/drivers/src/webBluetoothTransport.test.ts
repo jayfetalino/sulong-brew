@@ -128,6 +128,58 @@ describe('WebBluetoothTransport: connecting', () => {
     expect(fake.characteristic.startNotifications).toHaveBeenCalledTimes(1);
   });
 
+  it('also filters by the device name when a name prefix is given (the R2 and the Ti share a service)', async () => {
+    const fake = makeBluetooth();
+    const transport = new WebBluetoothTransport({
+      serviceUuid: SERVICE,
+      characteristicUuid: CHARACTERISTIC,
+      namePrefix: 'DiFluid R2',
+      bluetooth: fake.bluetooth,
+    });
+    await transport.connect();
+    expect(fake.bluetooth.requestDevice).toHaveBeenCalledWith({
+      filters: [{ services: [SERVICE], namePrefix: 'DiFluid R2' }],
+    });
+  });
+
+  it('does not send a name filter when none is given', async () => {
+    const fake = makeBluetooth();
+    await transportFor(fake).connect();
+    const options = (fake.bluetooth.requestDevice as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    expect(JSON.stringify(options)).not.toContain('namePrefix');
+  });
+
+  it('says refractometer, not scale, in its messages when told what the device is', async () => {
+    const words = { noun: 'refractometer', model: 'R2 Extract' };
+    const noDevice = new WebBluetoothTransport({
+      serviceUuid: SERVICE,
+      characteristicUuid: CHARACTERISTIC,
+      words,
+      bluetooth: makeBluetooth({
+        requestError: { name: 'NotFoundError', message: 'Bluetooth adapter not available.' },
+      }).bluetooth,
+    });
+    await expect(noDevice.connect()).rejects.toMatchObject({
+      message: expect.stringContaining('No refractometer was found'),
+    });
+    const notConnected = new WebBluetoothTransport({
+      serviceUuid: SERVICE,
+      characteristicUuid: CHARACTERISTIC,
+      words,
+      bluetooth: makeBluetooth().bluetooth,
+    });
+    await expect(notConnected.write(new Uint8Array([1]))).rejects.toMatchObject({
+      message: 'The refractometer is not connected.',
+    });
+    expect(mapBluetoothError({ name: 'NetworkError', message: 'x' }, words).message).toContain(
+      'connect to the refractometer',
+    );
+    expect(
+      mapBluetoothError({ name: 'NotFoundError', message: 'No Services matching UUID' }, words)
+        .message,
+    ).toContain('Is it the R2 Extract?');
+  });
+
   it('connecting again while connected does nothing', async () => {
     const fake = makeBluetooth();
     const transport = transportFor(fake);
