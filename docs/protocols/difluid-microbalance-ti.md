@@ -99,6 +99,21 @@ Device status codes: 0 Power down, 1 Charging, 2 Low power mode 1, 3 Low-battery
 8. The firmware version, and that it is V010 or later.
 9. Whether the cleartext channel works without the DiFluid server step.
 
+### What the driver assumes (LAB-16, `packages/drivers/src/difluid/tiScale.ts`)
+
+Each of these is read from DiFluid's document but unproven. Check them on the real scale:
+
+10. After the auto-send command (`DF DF 01 00 01 01 C1`) the scale repeats it back, or starts sending weights. The driver waits up to 3 seconds for either, and fails with "did not answer in time" otherwise.
+11. After the tare command (`DF DF 03 02 01 01 C5`) the scale repeats it back. The driver waits up to 3 seconds. If the scale tares without repeating it, the driver will report a timeout even though the tare worked.
+12. Chrome's device chooser finds the scale by the service filter `000000DD-...` alone (no name filter).
+13. A weight frame (19 bytes) arrives whole, or in pieces that the assembler can join. Bluetooth's default packet size is 20 bytes, so it should fit.
+14. Switching weight sending off when the driver disconnects leaves the scale and the DiFluid app working normally.
+15. What the screen shows when a weight frame arrives with its top bit set (the driver ignores it and shows a problem message), and whether that happens just after a tare.
+16. The scale's weight unit setting is read and converted but never changed. Check that grams and ounces both show correct grams in the app.
+17. The battery request (`DF DF 03 05 00 C6`) is implemented in the driver but not shown anywhere in the app yet.
+
+When these are confirmed, remove the "experimental" label (`TI_EXPERIMENTAL_NOTE` in `apps/lab/src/scaleFlow.ts`).
+
 ## Browser facts (known, from the project brief)
 
 - Web Bluetooth works in Chrome on a Mac (HTTPS or localhost).
