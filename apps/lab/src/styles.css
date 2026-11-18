@@ -476,3 +476,144 @@ h2 {
   color: var(--sulong-obsidian);
   background: var(--color-accent);
 }
+
+/* Live brew */
+.live {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.live-panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.live-panel h2 {
+  margin: 0;
+}
+
+.live-current {
+  border-color: var(--color-accent);
+}
+
+.live-readout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.live-weight {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 2.5rem;
+  line-height: 1.1;
+  color: var(--color-accent);
+}
+
+.live-unit {
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+}
+
+.live-distance {
+  font-family: var(--font-data);
+  font-size: 1.5rem;
+}
+
+.live-distance.over {
+  color: var(--color-danger);
+}
+
+.live-distance.at {
+  color: var(--color-accent);
+}
+
+.progress {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 120ms linear;
+}
+
+.step-view.active {
+  border-color: var(--color-accent);
+}
+
+.step-view.past {
+  opacity: 0.55;
+}
+
+.step-view {
+  border: 2px solid transparent;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9375rem;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+}
+
+.form-label {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.form-label select {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  min-height: 44px;
+  width: 100%;
+}
+
+/* Segmented choice, such as the demo speed */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: var(--space-1);
+}
+
+.segmented button {
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  padding: var(--space-2) var(--space-4);
+  min-height: 44px;
+  min-width: 56px;
+  cursor: pointer;
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--color-accent);
+  color: var(--sulong-obsidian);
+}

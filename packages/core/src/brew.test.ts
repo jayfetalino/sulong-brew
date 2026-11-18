@@ -8,6 +8,7 @@ const valid: BrewForm = {
   brewDate: '2026-11-09',
   doseG: '20',
   yieldG: '310',
+  yieldSource: '',
   brewTime: '3:10',
   waterTempC: '91',
   grindClicks: '24',
@@ -40,6 +41,7 @@ describe('parseBrewForm', () => {
         brewDate: '2026-11-09',
         doseG: 20,
         yieldG: 310,
+        yieldSource: 'manual',
         brewSeconds: 190,
         waterTempC: 91,
         grindClicks: 24,
@@ -140,6 +142,41 @@ describe('parseBrewForm: where the TDS came from', () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.errors.tdsSource).toBeDefined();
+  });
+});
+
+describe('parseBrewForm: where the yield came from', () => {
+  it('records a typed yield with no source as manual', () => {
+    const result = parseBrewForm({ ...valid, yieldG: '310', yieldSource: '' });
+    expect(result.ok && result.value.yieldSource).toBe('manual');
+  });
+
+  it.each(['demo', 'scale', 'manual'] as const)('keeps the source %s', (source) => {
+    const result = parseBrewForm({ ...valid, yieldSource: source });
+    expect(result.ok && result.value.yieldSource).toBe(source);
+  });
+
+  it('has no source when there is no yield, even if one was set', () => {
+    const result = parseBrewForm({ ...valid, yieldG: '', yieldSource: 'demo' });
+    expect(result.ok && result.value.yieldG).toBeNull();
+    expect(result.ok && result.value.yieldSource).toBeNull();
+  });
+
+  it('rejects a source it does not know', () => {
+    const result = parseBrewForm({
+      ...valid,
+      yieldSource: 'bluetooth-magic' as unknown as BrewForm['yieldSource'],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors.yieldSource).toBeDefined();
+  });
+
+  it('keeps the yield source and the TDS source independent', () => {
+    const result = parseBrewForm({ ...valid, yieldSource: 'demo', tdsSource: 'manual' });
+    expect(result.ok && [result.value.yieldSource, result.value.tdsSource]).toEqual([
+      'demo',
+      'manual',
+    ]);
   });
 });
 

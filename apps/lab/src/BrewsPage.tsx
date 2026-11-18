@@ -1,7 +1,8 @@
 import { useState } from 'preact/hooks';
-import { formatDuration, isDeleted, summarizeBrew, type Brew } from '@sulong/core';
+import { formatDuration, isDeleted, summarizeBrew, type Brew, type BrewDraft } from '@sulong/core';
 import { BrewForm } from './BrewForm';
 import { db } from './db';
+import { takeBrewDraft } from './draftStore';
 import { formatGrams, formatPercent } from './format';
 import { useLive } from './useLive';
 
@@ -17,8 +18,11 @@ export function BrewsPage() {
   const versions = useLive(() => db.recipeVersions.toArray());
   const batches = useLive(() => db.roastBatches.orderBy('roastDate').reverse().toArray());
   const coffees = useLive(() => db.coffees.toArray());
+  // A live brew may have left measurements for a new brew. They are taken once, here.
+  const [startDraft] = useState<BrewDraft | null>(takeBrewDraft);
+  const [draft, setDraft] = useState<BrewDraft | null>(startDraft);
   // 'new' = logging, a brew = editing it, null = showing the list.
-  const [editing, setEditing] = useState<'new' | Brew | null>(null);
+  const [editing, setEditing] = useState<'new' | Brew | null>(startDraft ? 'new' : null);
 
   if (!brews || !recipes || !versions || !batches || !coffees) {
     return <p class="muted">Loading</p>;
@@ -38,7 +42,11 @@ export function BrewsPage() {
         knownTags={knownTags}
         brew={editing === 'new' ? undefined : editing}
         lastBrew={editing === 'new' ? brews[0] : undefined}
-        onDone={() => setEditing(null)}
+        draft={editing === 'new' && draft ? draft : undefined}
+        onDone={() => {
+          setEditing(null);
+          setDraft(null);
+        }}
       />
     );
   }
@@ -87,6 +95,7 @@ export function BrewsPage() {
                       <span class="stat-label">Dose / yield</span>
                       <span class="stat-value">
                         {formatGrams(brew.doseG)} / {formatGrams(brew.yieldG)}
+                        {brew.yieldSource === 'demo' && brew.yieldG !== null ? ' (demo)' : ''}
                       </span>
                     </span>
                     <span>
@@ -106,7 +115,8 @@ export function BrewsPage() {
                       <span class="stat-label">Extraction yield</span>
                       <span class="stat-value">
                         {formatPercent(d.summary.extractionYield)}
-                        {brew.tdsSource === 'demo' && d.summary.extractionYield !== null
+                        {(brew.tdsSource === 'demo' || brew.yieldSource === 'demo') &&
+                        d.summary.extractionYield !== null
                           ? ' (demo)'
                           : ''}
                       </span>

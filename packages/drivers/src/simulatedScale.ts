@@ -131,6 +131,18 @@ export class SimulatedScale implements Scale {
     this.onScaleG = weightG;
   }
 
+  /** Adds (or takes off) grams at once, like a splash of water. Stops any pour under way. */
+  addWeight(deltaG: number): void {
+    this.onScaleG = this.onScaleNow() + deltaG;
+    this.ramp = null;
+  }
+
+  /** Puts a weight on the scale so that the display shows exactly this (after tare). */
+  setShownWeight(shownG: number): void {
+    this.ramp = null;
+    this.onScaleG = this.zeroG + shownG;
+  }
+
   /**
    * Makes the weight rise (or fall) smoothly over a time, like a pour. The target is the weight
    * the scale will SHOW (after tare), which is what a recipe step's target weight means.
