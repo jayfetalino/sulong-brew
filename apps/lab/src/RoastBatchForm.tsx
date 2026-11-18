@@ -9,7 +9,10 @@ import {
 } from '@sulong/core';
 import { db } from './db';
 import { deleteRoastBatch, saveRoastBatch } from './db/roastBatches';
+import { CoffeeForm } from './CoffeeForm';
 import { ROAST_LEVEL_LABELS, todayLocal } from './format';
+
+const ADD_COFFEE = '__add-coffee__';
 
 interface Props {
   coffees: Coffee[];
@@ -46,6 +49,8 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
   const [errors, setErrors] = useState<RoastBatchErrors>({});
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // 'new' = adding a coffee, a coffee = editing it, null = not editing a coffee.
+  const [coffeeEditor, setCoffeeEditor] = useState<'new' | Coffee | null>(null);
 
   const onDelete = async () => {
     if (!batch) return;
@@ -61,8 +66,13 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
   const set = <K extends keyof FormValues>(key: K, value: FormValues[K]) =>
     setValues((v) => ({ ...v, [key]: value }));
 
-  const onCoffeeChange = (coffeeId: string) => {
-    const coffee = coffees.find((c) => c.id === coffeeId);
+  /** `known` is for a coffee just saved, which the list passed in may not contain yet. */
+  const onCoffeeChange = (coffeeId: string, known?: Coffee) => {
+    if (coffeeId === ADD_COFFEE) {
+      setCoffeeEditor('new');
+      return;
+    }
+    const coffee = known ?? coffees.find((c) => c.id === coffeeId);
     setValues((v) => ({
       ...v,
       coffeeId,
@@ -91,6 +101,24 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
   const error = (key: keyof FormValues) =>
     errors[key] ? <span class="field-error">{errors[key]}</span> : null;
 
+  if (coffeeEditor) {
+    const editing = coffeeEditor === 'new' ? undefined : coffeeEditor;
+    return (
+      <CoffeeForm
+        coffee={editing}
+        others={coffees.filter((c) => c.id !== editing?.id)}
+        onDone={(saved, deleted) => {
+          setCoffeeEditor(null);
+          // The batch the person was filling in is kept. A new coffee is chosen for it.
+          if (saved && !editing) onCoffeeChange(saved.id, saved);
+          if (deleted) set('coffeeId', '');
+        }}
+      />
+    );
+  }
+
+  const chosenCoffee = coffees.find((c) => c.id === values.coffeeId);
+
   return (
     <form class="form" onSubmit={onSubmit} noValidate>
       <h2>{batch ? 'Edit roast batch' : 'New roast batch'}</h2>
@@ -107,9 +135,15 @@ export function RoastBatchForm({ coffees, batch, onDone }: Props) {
               {c.name}
             </option>
           ))}
+          <option value={ADD_COFFEE}>+ Add a new coffee</option>
         </select>
         {error('coffeeId')}
       </label>
+      {chosenCoffee && (
+        <button type="button" class="link-button" onClick={() => setCoffeeEditor(chosenCoffee)}>
+          Edit or delete this coffee
+        </button>
+      )}
 
       <label>
         Roast date
