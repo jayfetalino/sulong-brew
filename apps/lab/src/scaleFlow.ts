@@ -35,7 +35,7 @@ export const TI_SCALE_ID = 'difluid-microbalance-ti';
 
 /** Shown for as long as the Ti connection is unproven. Remove it after testing with a real Ti. */
 export const TI_EXPERIMENTAL_NOTE =
-  "EXPERIMENTAL. This connection was written from DiFluid's documents and has not been tried with a real scale yet. Weights may be wrong or missing, so check them against the scale's own screen.";
+  "EXPERIMENTAL. This connection was written from DiFluid's documents and has not been tried with a real scale yet. Weights may be wrong or missing, so check them against the scale's own screen. The DiFluid R2 refractometer shares the same Bluetooth service, so the list may show it too: pick the one that is the scale (its name does not start with DiFluid R2).";
 
 /**
  * The scales the live brew can offer.

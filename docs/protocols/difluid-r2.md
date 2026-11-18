@@ -90,6 +90,15 @@ DF DF 03 00 07 02 00 4F 00 02 09 3D 61    result: 0x004F = 79, so concentration 
 6. Whether a DiFluid app connection blocks ours, and whether pairing is needed.
 7. The firmware version, and that it is 2.1.2 or later.
 
+Assumptions the LAB-13 driver makes, each to be confirmed or fixed on a real R2:
+
+8. After the single-test command the R2 sends the documented frames (status, temperatures, result) by itself, and the driver does not need to send anything else. The driver treats the first result frame as the answer.
+9. The sample must already be on the prism. If not, the R2 is assumed to send an error frame (Func 3, Cmd 254 or 255). The driver shows "The R2 reported an error (bytes). Check that there is sample on the prism". What the real bytes mean is not in DiFluid's table.
+10. How long a test takes. The driver waits 60 seconds (a guess, not a measurement), then reports a timeout. Measure it and tighten it.
+11. DiFluid documents no way to cancel a test on the device. After a cancel or a timeout the driver refuses a new test for 5 seconds (also a guess) so late frames of the old test are not read as the new result. Measure how late frames really arrive.
+12. The driver sends only the single-test command. It never sends the Ti's commands (auto-send, tare). The R2 and the Ti share a service, so the device chooser filters by the name prefix "DiFluid R2". If the real name differs (for example no space, or another case), the chooser will list nothing. That is the first thing to check.
+13. A concentration at or below 0 or above 30 percent is refused as not a coffee TDS. A water test may legitimately read 0, and is refused on purpose.
+
 ## Browser facts (known, from the project brief)
 
 - Web Bluetooth works in Chrome on a Mac (HTTPS or localhost).
@@ -97,6 +106,7 @@ DF DF 03 00 07 02 00 4F 00 02 09 3D 61    result: 0x004F = 79, so concentration 
 
 ## Test plan
 
-- The frame and result parsers are written and tested against every documented frame (`packages/drivers/src/difluid`, ADR-015). Numbers with the top bit set are refused until the real sign is seen on a device. There is no service UUID in the code, because DiFluid does not state one.
+- The frame and result parsers are written and tested against every documented frame (`packages/drivers/src/difluid`, ADR-015). Numbers with the top bit set are refused until the real sign is seen on a device. The R2 service, channel and name prefix are constants in `r2.ts` (`R2_SERVICE_UUID`, `R2_CHARACTERISTIC_UUID`, `R2_NAME_PREFIX`), taken from DiFluid support's email, not from a public document, and unverified on a device.
+- `DifluidR2Refractometer` (LAB-13, ADR-017) is written from the documents and the email and tested only against fakes (a fake in the unit tests, and an independent fake `navigator.bluetooth` in real Chrome). It is listed in the lab as "DiFluid R2 Extract (experimental)".
 - The driver must pass the shared contract test in `packages/drivers/src/testing/contract.ts`.
 - Final proof is a real R2 on a Mac in Chrome, then on an iPhone in Bluefy.
