@@ -62,6 +62,12 @@ export interface Scale {
   onWeight(listener: (reading: WeightReading) => void): () => void;
   /** Calls the listener whenever the status changes. Returns a function that stops listening. */
   onStatusChange(listener: (status: ScaleStatus) => void): () => void;
+  /**
+   * Optional. Real scales can report a problem that does not stop the stream, for example
+   * a weight unit the app cannot read. The listener gets the message when a problem appears,
+   * and null when readings are good again. Returns a function that stops listening.
+   */
+  onProblem?(listener: (message: string | null) => void): () => void;
 }
 
 /** Throws a ScaleError ('invalid-reading') unless the number can be a weight. */

@@ -1,6 +1,10 @@
 import {
+  DifluidTiScale,
   ScaleError,
   SimulatedScale,
+  TI_CHARACTERISTIC_UUID,
+  TI_SERVICE_UUID,
+  WebBluetoothTransport,
   bluetoothSupport,
   type BluetoothSupport,
   type Scale,
@@ -15,18 +19,28 @@ export interface ScaleOption {
   /** Plain-English reason, shown when the option is not available. */
   unavailableReason: string;
   /**
+   * A warning shown whenever this option is chosen, for connections that have not been proven
+   * on a real device yet. Null when there is nothing to warn about.
+   */
+  experimentalNote: string | null;
+  /**
    * Makes a fresh scale. `now` lets the live brew give a demo scale the same (possibly faster)
-   * clock as its timer. Null when the option is not available.
+   * clock as its timer. A real scale ignores it. Null when the option is not available.
    */
   create: ((now?: () => Date) => Scale) | null;
 }
 
 export const DEMO_SCALE_ID = 'demo-scale';
+export const TI_SCALE_ID = 'difluid-microbalance-ti';
+
+/** Shown for as long as the Ti connection is unproven. Remove it after testing with a real Ti. */
+export const TI_EXPERIMENTAL_NOTE =
+  "EXPERIMENTAL. This connection was written from DiFluid's documents and has not been tried with a real scale yet. Weights may be wrong or missing, so check them against the scale's own screen.";
 
 /**
  * The scales the live brew can offer.
- * The DiFluid Microbalance Ti is listed so it is visible, but it is not usable until its
- * Bluetooth connection has been built and tested with a real scale (see docs/protocols/).
+ * The DiFluid Microbalance Ti works through Web Bluetooth (Chrome on a Mac, or Bluefy on iPhone),
+ * and is marked experimental until it has been tested with a real scale (see docs/protocols/).
  */
 export function listScaleOptions(support: BluetoothSupport = bluetoothSupport()): ScaleOption[] {
   return [
@@ -36,20 +50,25 @@ export function listScaleOptions(support: BluetoothSupport = bluetoothSupport())
       isDemo: true,
       available: true,
       unavailableReason: '',
+      experimentalNote: null,
       create: (now) => new SimulatedScale({ now }),
     },
     {
-      id: 'difluid-microbalance-ti',
-      label: 'DiFluid Microbalance Ti',
+      id: TI_SCALE_ID,
+      label: 'DiFluid Microbalance Ti (experimental)',
       isDemo: false,
-      available: false,
-      unavailableReason: [
-        'Not available yet. The connection has not been built into the app, and it needs testing with a real scale.',
-        support.supported ? '' : support.reason,
-      ]
-        .filter(Boolean)
-        .join(' '),
-      create: null,
+      available: support.supported,
+      unavailableReason: support.supported ? '' : support.reason,
+      experimentalNote: TI_EXPERIMENTAL_NOTE,
+      create: support.supported
+        ? () =>
+            new DifluidTiScale(
+              new WebBluetoothTransport({
+                serviceUuid: TI_SERVICE_UUID,
+                characteristicUuid: TI_CHARACTERISTIC_UUID,
+              }),
+            )
+        : null,
     },
   ];
 }
