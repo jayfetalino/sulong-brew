@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ScaleError, SimulatedScale } from '@sulong/drivers';
+import { DifluidTiScale, ScaleError, SimulatedScale } from '@sulong/drivers';
 import {
   DEMO_SCALE_ID,
+  TI_EXPERIMENTAL_NOTE,
+  TI_SCALE_ID,
   connectScale,
   describeScaleError,
   listScaleOptions,
@@ -13,12 +15,43 @@ const EM_DASH = String.fromCharCode(0x2014);
 describe('listScaleOptions', () => {
   const supported = { supported: true, reason: '' };
 
-  it('offers a demo scale that works, and the DiFluid Microbalance Ti as not available yet', () => {
+  it('offers a demo scale, and the DiFluid Microbalance Ti when Bluetooth works', () => {
     const [demo, ti] = listScaleOptions(supported);
-    expect(demo).toMatchObject({ id: DEMO_SCALE_ID, isDemo: true, available: true });
+    expect(demo).toMatchObject({
+      id: DEMO_SCALE_ID,
+      isDemo: true,
+      available: true,
+      experimentalNote: null,
+    });
     expect(demo?.create?.()).toBeInstanceOf(SimulatedScale);
-    expect(ti).toMatchObject({ id: 'difluid-microbalance-ti', available: false, create: null });
-    expect(ti?.unavailableReason).toContain('Not available yet');
+    expect(ti).toMatchObject({ id: TI_SCALE_ID, isDemo: false, available: true });
+    expect(ti?.create?.()).toBeInstanceOf(DifluidTiScale);
+  });
+
+  it('marks the Ti experimental, and says plainly that it has not been tried on a real scale', () => {
+    const ti = listScaleOptions(supported)[1];
+    expect(ti?.label).toContain('experimental');
+    expect(ti?.experimentalNote).toBe(TI_EXPERIMENTAL_NOTE);
+    expect(TI_EXPERIMENTAL_NOTE).toContain('not been tried with a real scale');
+    expect(TI_EXPERIMENTAL_NOTE).toContain("scale's own screen");
+  });
+
+  it('makes a fresh Ti scale each time, which is a real (not demo) scale', () => {
+    const ti = listScaleOptions(supported)[1];
+    const a = ti?.create?.();
+    const b = ti?.create?.();
+    expect(a).not.toBe(b);
+    expect(a?.isDemo).toBe(false);
+    expect(a?.status).toBe('disconnected');
+  });
+
+  it('turns the Ti off, with the reason, when Bluetooth is not supported', () => {
+    const [, ti] = listScaleOptions({
+      supported: false,
+      reason: 'This browser cannot use Bluetooth from a web page. Use Chrome on a Mac.',
+    });
+    expect(ti).toMatchObject({ available: false, create: null });
+    expect(ti?.unavailableReason).toContain('Chrome on a Mac');
   });
 
   it('gives a demo scale the clock it is handed', async () => {
@@ -33,21 +66,14 @@ describe('listScaleOptions', () => {
     expect(seen).toEqual(['2026-11-16T10:00:00.000Z']);
   });
 
-  it('adds the browser reason when Bluetooth is not supported', () => {
-    const [, ti] = listScaleOptions({
-      supported: false,
-      reason: 'This browser cannot use Bluetooth from a web page. Use Chrome on a Mac.',
-    });
-    expect(ti?.unavailableReason).toContain('Chrome on a Mac');
-  });
-
-  it('never marks the real scale as a demo', () => {
-    expect(listScaleOptions(supported)[1]?.isDemo).toBe(false);
-  });
-
   it('uses no em-dashes in what a person reads', () => {
-    for (const option of listScaleOptions({ supported: false, reason: 'Use Chrome.' })) {
-      expect(option.label + option.unavailableReason).not.toContain(EM_DASH);
+    for (const option of [
+      ...listScaleOptions({ supported: false, reason: 'Use Chrome.' }),
+      ...listScaleOptions(supported),
+    ]) {
+      expect(
+        option.label + option.unavailableReason + (option.experimentalNote ?? ''),
+      ).not.toContain(EM_DASH);
     }
   });
 });

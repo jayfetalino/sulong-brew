@@ -44,6 +44,7 @@ export function LiveBrew({ recipe, version, onCancel, onFinish }: Props) {
   const [phase, setPhase] = useState<Phase>('setup');
   const [weight, setWeight] = useState<number | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [autoDemo, setAutoDemo] = useState(true);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -118,13 +119,18 @@ export function LiveBrew({ recipe, version, onCancel, onFinish }: Props) {
         setMessage({ text: 'The scale disconnected.', kind: 'error' });
       }
     });
+    // A real scale can report a problem that does not stop the weights, such as a unit
+    // the app cannot read. Show it for as long as it lasts.
+    const stopProblem = created.onProblem?.((text) => setProblem(text)) ?? (() => undefined);
     unsubscribeRef.current = () => {
       stopWeights();
       stopStatus();
+      stopProblem();
     };
 
     const controller = new AbortController();
     abortRef.current = controller;
+    setProblem(null);
     setPhase('connecting');
     setMessage({ text: 'Connecting...', kind: 'info' });
     const result = await connectScale(created, controller.signal);
@@ -221,6 +227,12 @@ export function LiveBrew({ recipe, version, onCancel, onFinish }: Props) {
         </p>
       )}
 
+      {selected?.experimentalNote && (
+        <p class="demo-note" data-testid="experimental-note">
+          {selected.experimentalNote}
+        </p>
+      )}
+
       {!connected && (
         <section class="live-panel">
           <h2>Scale</h2>
@@ -234,7 +246,7 @@ export function LiveBrew({ recipe, version, onCancel, onFinish }: Props) {
               {options.map((o) => (
                 <option key={o.id} value={o.id} disabled={!o.available}>
                   {o.label}
-                  {o.available ? '' : ' (not available yet)'}
+                  {o.available ? '' : ' (unavailable)'}
                 </option>
               ))}
             </select>
@@ -273,6 +285,11 @@ export function LiveBrew({ recipe, version, onCancel, onFinish }: Props) {
 
       {connected && (
         <>
+          {problem && (
+            <p class="field-error" role="alert" data-testid="scale-problem">
+              {problem}
+            </p>
+          )}
           <div class="live-readout" aria-label="Live weight and time">
             <div>
               <span class="stat-label">Weight</span>
