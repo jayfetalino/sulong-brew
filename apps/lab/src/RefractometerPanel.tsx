@@ -80,7 +80,7 @@ export function RefractometerPanel({ onReading }: Props) {
             {options.map((o) => (
               <option key={o.id} value={o.id} disabled={!o.available}>
                 {o.label}
-                {o.available ? '' : ' (not available yet)'}
+                {o.available ? '' : ' (not available here)'}
               </option>
             ))}
           </select>
@@ -90,6 +90,12 @@ export function RefractometerPanel({ onReading }: Props) {
           <p class="demo-note">
             <strong>DEMO.</strong> This device makes up numbers so you can try the app. Brews that
             use them are marked as demo readings.
+          </p>
+        )}
+
+        {selected?.experimentalNote && (
+          <p class="demo-note" data-testid="experimental-note">
+            {selected.experimentalNote}
           </p>
         )}
 

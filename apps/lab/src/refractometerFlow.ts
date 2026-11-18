@@ -1,6 +1,11 @@
 import {
+  DifluidR2Refractometer,
+  R2_CHARACTERISTIC_UUID,
+  R2_NAME_PREFIX,
+  R2_SERVICE_UUID,
   RefractometerError,
   SimulatedRefractometer,
+  WebBluetoothTransport,
   bluetoothSupport,
   type BluetoothSupport,
   type Refractometer,
@@ -15,16 +20,26 @@ export interface RefractometerOption {
   available: boolean;
   /** Plain-English reason, shown when the option is not available. */
   unavailableReason: string;
+  /**
+   * A warning shown whenever this option is chosen, for connections that have not been proven
+   * on a real device yet. Null when there is nothing to warn about.
+   */
+  experimentalNote: string | null;
   /** Makes a fresh driver. Null when the option is not available. */
   create: (() => Refractometer) | null;
 }
 
 export const DEMO_OPTION_ID = 'demo';
+export const R2_OPTION_ID = 'difluid-r2';
+
+/** Shown for as long as the R2 connection is unproven. Remove it after testing with a real R2. */
+export const R2_EXPERIMENTAL_NOTE =
+  "EXPERIMENTAL. This connection was written from DiFluid's documents and an email from DiFluid support, and has not been tried with a real R2 yet. TDS values may be wrong or missing, so check them against the R2's own screen. Put your sample on the prism before you tap Read TDS.";
 
 /**
  * The devices the brew form can offer.
- * The DiFluid R2 is listed so it is visible, but it is not usable until DiFluid supplies
- * its Bluetooth protocol and the driver is built from it (see docs/protocols/difluid-r2.md).
+ * The DiFluid R2 Extract works through Web Bluetooth (Chrome on a Mac, or Bluefy on iPhone), and
+ * is marked experimental until it has been tested with a real R2 (see docs/protocols/difluid-r2.md).
  */
 export function listRefractometerOptions(
   support: BluetoothSupport = bluetoothSupport(),
@@ -36,20 +51,28 @@ export function listRefractometerOptions(
       isDemo: true,
       available: true,
       unavailableReason: '',
+      experimentalNote: null,
       create: () => new SimulatedRefractometer(),
     },
     {
-      id: 'difluid-r2',
-      label: 'DiFluid R2 Extract',
+      id: R2_OPTION_ID,
+      label: 'DiFluid R2 Extract (experimental)',
       isDemo: false,
-      available: false,
-      unavailableReason: [
-        "Not available yet. Waiting for DiFluid's Bluetooth details.",
-        support.supported ? '' : support.reason,
-      ]
-        .filter(Boolean)
-        .join(' '),
-      create: null,
+      available: support.supported,
+      unavailableReason: support.supported ? '' : support.reason,
+      experimentalNote: R2_EXPERIMENTAL_NOTE,
+      create: support.supported
+        ? () =>
+            new DifluidR2Refractometer(
+              new WebBluetoothTransport({
+                serviceUuid: R2_SERVICE_UUID,
+                characteristicUuid: R2_CHARACTERISTIC_UUID,
+                // The R2 shares its service with the Microbalance Ti, so the name tells them apart.
+                namePrefix: R2_NAME_PREFIX,
+                words: { noun: 'refractometer', model: 'R2 Extract' },
+              }),
+            )
+        : null,
     },
   ];
 }

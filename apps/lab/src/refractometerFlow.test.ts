@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { RefractometerError, SimulatedRefractometer } from '@sulong/drivers';
+import {
+  DifluidR2Refractometer,
+  RefractometerError,
+  SimulatedRefractometer,
+} from '@sulong/drivers';
 import {
   DEMO_OPTION_ID,
+  R2_EXPERIMENTAL_NOTE,
+  R2_OPTION_ID,
   describeRefractometerError,
   listRefractometerOptions,
   takeReading,
@@ -12,21 +18,33 @@ const EM_DASH = String.fromCharCode(0x2014);
 describe('listRefractometerOptions', () => {
   const supported = { supported: true, reason: '' };
 
-  it('offers a demo device that works, and the DiFluid R2 as not available yet', () => {
-    const [demo, difluid] = listRefractometerOptions(supported);
-    expect(demo).toMatchObject({ id: DEMO_OPTION_ID, isDemo: true, available: true });
+  it('offers a demo device that works, and the DiFluid R2 as experimental', () => {
+    const [demo, r2] = listRefractometerOptions(supported);
+    expect(demo).toMatchObject({
+      id: DEMO_OPTION_ID,
+      isDemo: true,
+      available: true,
+      experimentalNote: null,
+    });
     expect(demo?.create?.()).toBeInstanceOf(SimulatedRefractometer);
-    expect(difluid).toMatchObject({ id: 'difluid-r2', available: false, create: null });
-    expect(difluid?.unavailableReason).toContain("Waiting for DiFluid's Bluetooth details");
+    expect(r2).toMatchObject({ id: R2_OPTION_ID, available: true, isDemo: false });
+    expect(r2?.label).toContain('experimental');
+    expect(r2?.experimentalNote).toBe(R2_EXPERIMENTAL_NOTE);
+    expect(r2?.create?.()).toBeInstanceOf(DifluidR2Refractometer);
   });
 
-  it('adds the browser reason when Bluetooth is not supported', () => {
-    const [, difluid] = listRefractometerOptions({
+  it('the experimental note says the R2 has not been tried on a real device', () => {
+    expect(R2_EXPERIMENTAL_NOTE).toContain('has not been tried with a real R2');
+  });
+
+  it('makes the R2 not available, with the browser reason, when Bluetooth is not supported', () => {
+    const [, r2] = listRefractometerOptions({
       supported: false,
       reason:
         'Safari on iPhone cannot use Bluetooth from a web page. Open this app in the Bluefy browser instead.',
     });
-    expect(difluid?.unavailableReason).toContain('Bluefy');
+    expect(r2).toMatchObject({ available: false, create: null });
+    expect(r2?.unavailableReason).toContain('Bluefy');
   });
 
   it('never marks the DiFluid R2 as a demo device', () => {
@@ -35,7 +53,9 @@ describe('listRefractometerOptions', () => {
 
   it('uses no em-dashes in what a person reads', () => {
     for (const option of listRefractometerOptions({ supported: false, reason: 'Use Chrome.' })) {
-      expect(option.label + option.unavailableReason).not.toContain(EM_DASH);
+      expect(
+        option.label + option.unavailableReason + (option.experimentalNote ?? ''),
+      ).not.toContain(EM_DASH);
     }
   });
 });

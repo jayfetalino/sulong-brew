@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { decodeDifluidFrame, encodeDifluidFrame, type DifluidFrame } from './frame';
 import { fromHex, toHex } from './hex';
-import { R2SingleTestCollector, R2_STATUS_NAMES, parseR2Frame, r2Commands } from './r2';
+import {
+  R2SingleTestCollector,
+  R2_CHARACTERISTIC_UUID,
+  R2_NAME_PREFIX,
+  R2_SERVICE_UUID,
+  R2_STATUS_NAMES,
+  parseR2Frame,
+  r2Commands,
+} from './r2';
 
 const frameOf = (hex: string): DifluidFrame => {
   const result = decodeDifluidFrame(fromHex(hex));
@@ -165,26 +173,38 @@ describe('R2SingleTestCollector', () => {
     const collector = new R2SingleTestCollector();
     collector.push(frameOf(official[0] as string));
     const result = collector.push(frameOf(toHex(encodeDifluidFrame(3, 254, [2, 3]))));
-    expect(result).toMatchObject({ state: 'failed' });
+    expect(result).toMatchObject({ state: 'failed', reason: 'device-error' });
     expect(result.state === 'failed' && result.message).toContain('02 03');
   });
 
   it('fails on a TDS of zero or below, which cannot be a coffee measurement', () => {
     const collector = new R2SingleTestCollector();
     const zero = encodeDifluidFrame(3, 0, [2, 0, 0, 0, 2, 9, 0x3d]);
-    expect(collector.push(frameOf(toHex(zero)))).toMatchObject({ state: 'failed' });
+    expect(collector.push(frameOf(toHex(zero)))).toMatchObject({
+      state: 'failed',
+      reason: 'invalid-tds',
+    });
   });
 
   it('fails on a TDS above 30 percent', () => {
     const collector = new R2SingleTestCollector();
     const high = encodeDifluidFrame(3, 0, [2, 0x0b, 0xb9, 0, 2, 9, 0x3d]); // 0x0BB9 = 3001 -> 30.01
-    expect(collector.push(frameOf(toHex(high)))).toMatchObject({ state: 'failed' });
+    expect(collector.push(frameOf(toHex(high)))).toMatchObject({
+      state: 'failed',
+      reason: 'invalid-tds',
+    });
   });
 
   it('fails on a frame it cannot use, rather than carrying on', () => {
     const collector = new R2SingleTestCollector();
     const result = collector.push(frameOf('DF DF 03 01 07 02 FF F9 00 02 08 A6 73'));
-    expect(result.state).toBe('failed');
+    expect(result).toMatchObject({ state: 'failed', reason: 'unusable-frame' });
+  });
+
+  it('knows the R2 identifiers DiFluid support gave: the Ti service, channel AA01, and the name prefix', () => {
+    expect(R2_SERVICE_UUID).toBe('000000dd-0000-1000-8000-00805f9b34fb');
+    expect(R2_CHARACTERISTIC_UUID).toBe('0000aa01-0000-1000-8000-00805f9b34fb');
+    expect(R2_NAME_PREFIX).toBe('DiFluid R2');
   });
 
   it('stays finished: nothing after the end changes the outcome', () => {

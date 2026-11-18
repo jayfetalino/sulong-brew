@@ -8,6 +8,21 @@
 import { encodeDifluidFrame, type DifluidFrame } from './frame';
 import { TDS_MAX, TDS_MIN_EXCLUSIVE } from '../refractometer';
 
+/**
+ * How to find the R2 and where its messages travel.
+ *
+ * NOT in DiFluid's public documents. DiFluid support told the project owner by email on
+ * 2026-11-18: "The UUID and service are the same as those of the Microbalance Ti. The device
+ * name is 'DiFluid R2 xxxxx'." So the R2 uses the Ti's service and data channel and advertises a
+ * name that starts with "DiFluid R2". Not yet checked on a real R2.
+ * Because the Ti uses the same service, a device chooser must also filter by the name prefix.
+ */
+export const R2_SERVICE_UUID = '000000dd-0000-1000-8000-00805f9b34fb';
+export const R2_CHARACTERISTIC_UUID = '0000aa01-0000-1000-8000-00805f9b34fb';
+export const R2_NAME_PREFIX = 'DiFluid R2';
+/** DiFluid's stated minimum firmware for the R2 (the document says 2.1.2, the README "V212"). */
+export const R2_MIN_FIRMWARE = '2.1.2';
+
 const FUNC_ACTION = 3;
 const CMD_SINGLE_TEST = 0;
 const CMD_AVERAGE_TEST = 1;
@@ -193,10 +208,13 @@ export function parseR2Frame(frame: DifluidFrame): R2ParseResult {
   return { ok: true, message: { type: 'unknown', func, cmd, data: plain } };
 }
 
+/** Why a test failed: the R2 said so, a frame could not be used, or the number cannot be a TDS. */
+export type R2FailureReason = 'device-error' | 'unusable-frame' | 'invalid-tds';
+
 export type R2TestProgress =
   | { state: 'waiting' }
   | { state: 'done'; tdsPercent: number }
-  | { state: 'failed'; message: string };
+  | { state: 'failed'; reason: R2FailureReason; message: string };
 
 /**
  * Follows one single test. Feed it each frame the R2 sends after `r2Commands.singleTest()`.
@@ -209,17 +227,19 @@ export class R2SingleTestCollector {
   push(frame: DifluidFrame): R2TestProgress {
     if (this.finished) return { state: 'waiting' };
     const parsed = parseR2Frame(frame);
-    if (!parsed.ok) return this.fail(parsed.message);
+    if (!parsed.ok) return this.fail('unusable-frame', parsed.message);
 
     const message = parsed.message;
     if (message.type === 'error' || message.type === 'unknown-error') {
       return this.fail(
+        'device-error',
         `The R2 reported an error (${message.data.map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ') || 'no details'}).`,
       );
     }
     if (message.type === 'result') {
       if (message.tdsPercent <= TDS_MIN_EXCLUSIVE || message.tdsPercent > TDS_MAX) {
         return this.fail(
+          'invalid-tds',
           `The R2 gave a TDS of ${message.tdsPercent} %, which cannot be a coffee measurement. Nothing was used.`,
         );
       }
@@ -229,8 +249,8 @@ export class R2SingleTestCollector {
     return { state: 'waiting' };
   }
 
-  private fail(message: string): R2TestProgress {
+  private fail(reason: R2FailureReason, message: string): R2TestProgress {
     this.finished = true;
-    return { state: 'failed', message };
+    return { state: 'failed', reason, message };
   }
 }
