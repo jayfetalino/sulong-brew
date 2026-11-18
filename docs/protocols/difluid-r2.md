@@ -2,7 +2,7 @@
 
 Taken from DiFluid's official open-source documentation (MIT license). See [difluid-frame-format.md](difluid-frame-format.md) for the source, the frame layout, the check sum rule, the two Bluetooth channels and known document errors. Items DiFluid does not state are marked **Not stated**. Nothing is guessed.
 
-**Status:** documented on paper, with **one important gap: the R2's Bluetooth service ID is not stated**. **Nothing here has been tested on a real device yet**, because the project owner does not have one.
+**Status:** documented on paper, and DiFluid's support team has since answered the open questions by email (2026-11-18, see below and [difluid-frame-format.md](difluid-frame-format.md)). The R2's service ID, which was missing from the public documents, is now known **from that email only**. **Nothing here has been tested on a real device yet**, because the R2 has not arrived.
 
 ## Source
 
@@ -17,11 +17,12 @@ Taken from DiFluid's official open-source documentation (MIT license). See [difl
 
 ## What the documents say
 
-### 1. Finding the device (GAP)
+### 1. Finding the device
 
-- **Service UUID: Not stated for the R2.** The README says to search "according to serviceID" without giving one, and the R2 document does not list one. DiFluid publishes service UUIDs for the Microbalance and Microbalance Ti only.
-- **Advertised device name: Not stated.**
-- How to close the gap, in order: ask DiFluid for the R2's service UUID, or read it from the device itself once it is owned. Do not copy a UUID from a third-party project.
+- **In the public documents: Not stated.** The README says to search "according to serviceID" without giving one, and the R2 document does not list one. DiFluid publishes service UUIDs for the Microbalance and Microbalance Ti only.
+- **From DiFluid support (email, 2026-11-18, not published):** "The UUID and service are the same as those of the Microbalance Ti. The device name is 'DiFluid R2 xxxxx'." So the R2 uses the service `000000DD-0000-1000-8000-00805F9B34FB` and the same data channel as the Ti (`0000aa01-0000-1000-8000-00805f9b34fb`), and advertises a name that starts with **"DiFluid R2 "** followed by a code.
+- **Consequence:** the R2 and the Microbalance Ti advertise the same service, so a device chooser filtered by service alone would list both. The R2 chooser must also filter by the name prefix "DiFluid R2". The Ti's own advertised name is not known, so the Ti chooser cannot filter by name yet, and the screen should tell the person to pick the scale, not the refractometer.
+- **Still to verify on the real R2:** the service ID and the name prefix, as reported. Do not copy a UUID from a third-party project.
 
 ### 2. Characteristic
 
@@ -74,14 +75,14 @@ DF DF 03 00 07 02 00 4F 00 02 09 3D 61    result: 0x004F = 79, so concentration 
 
 ### 6. Not stated by DiFluid
 
-- The R2's service UUID and advertised name (the gap above).
+- The R2's service UUID and advertised name, in the public documents (DiFluid support has now supplied both, see section 1).
 - Pairing or bonding requirements, and whether the DiFluid app and a web page can be connected at the same time.
 - The exact read, write and notify properties of the characteristic.
 - How a device-started (auto) test is reported.
 
 ## Verify on a real device (when the R2 arrives)
 
-1. Find the R2's service UUID and advertised name (ask DiFluid, or read them from the device), and record them here.
+1. The R2 really advertises the service `000000DD-...` and a name starting "DiFluid R2 " (as DiFluid support reported), and Chrome's chooser finds it with both filters.
 2. The cleartext characteristic exists and which operations it offers.
 3. Send the single-test frame. The status, temperature and result frames arrive in order, and the TDS matches the device screen.
 4. What the device sends after a no-liquid or out-of-range test.

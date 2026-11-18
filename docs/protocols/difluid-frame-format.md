@@ -57,6 +57,18 @@ The README says devices "now have the encrypted channel and cleartext channel bo
 - **Not stated:** the read, write and notify properties of these characteristics. A driver must check which operations the device reports at runtime and must not assume.
 - **Still to verify on a real device:** that the cleartext channel really is on, and works from a web page, on the actual firmware.
 
+## Answers from DiFluid support (email received 2026-11-18)
+
+The project owner asked DiFluid about gaps in the public documents. Their reply is not published, so it is recorded here as reported. These are statements from DiFluid, not observations of a device, and none has been checked on real hardware.
+
+| Question                               | DiFluid's answer, as received                                                                                               | What it means for us                                                                                                                                                                                        |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The R2's Bluetooth service ID and name | "The UUID and service are the same as those of the Microbalance Ti. The device name is 'DiFluid R2 xxxxx'."                 | The R2 uses service `000000DD-...` and the same data channel as the Ti, and its name starts with "DiFluid R2 ". Because the Ti uses the same service, a chooser needs the name prefix to tell the R2 apart. |
+| The channel                            | "The connection uses a cleartext communication channel. The data is transmitted exactly as described in the documentation." | Frames travel on the cleartext channel (AA01) in the documented format. This supports the README's "both channels on by default", but it is still to be seen on a real device.                              |
+| Negative weights                       | "Negative weight values are transmitted in the same way as normal weight values."                                           | No special marker. The encoding is not named. A signed 32-bit number is the likely reading, but it is an inference, so top-bit weights stay refused until a device confirms it.                             |
+
+They also pointed to the public documents folder (https://github.com/DiFluid/difluid-sdk-demo/tree/master/docs), which this project already uses.
+
 ## Known inconsistencies in DiFluid's documents
 
 Recorded so nobody is surprised later. We follow the examples where they disagree with the tables, and confirm on real hardware.
