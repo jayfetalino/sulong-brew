@@ -101,8 +101,9 @@ Scale integration (DiFluid Microbalance Ti), same pattern as the refractometer. 
 Gaps found while using the lab:
 
 - LAB-18 add, edit and delete your own coffees from the roast form (name, usual roast level, espresso flag; a coffee in use cannot be deleted), see ADR-018 (done)
+- LAB-19 compare view: tick 2 or 3 brews on the Brews tab and see them side by side, with differing rows marked (no judgement of better or worse), see ADR-019 (done)
 
-Later, not now: compare view, Kaffelogic .klog import, QR codes, public ratings (need a backend).
+Later, not now: Kaffelogic .klog import, QR codes, public ratings (need a backend).
 
 ## Open decisions (ask Jay, never decide alone)
 
