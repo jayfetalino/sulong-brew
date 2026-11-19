@@ -636,3 +636,129 @@ h2 {
   background: var(--color-accent);
   color: var(--sulong-obsidian);
 }
+
+/* ---- Compare brews ---- */
+
+.page-head .row,
+.compare-bar .row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.card.picked {
+  border-color: var(--color-accent);
+}
+
+.pick-mark {
+  display: inline-grid;
+  place-items: center;
+  justify-self: end;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.card.picked .pick-mark {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.compare-bar {
+  position: fixed;
+  inset: auto 0 calc(var(--tabbar-height) + env(safe-area-inset-bottom)) 0;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.compare-bar .field-error {
+  margin: 0;
+}
+
+.compare-bar .button {
+  flex: 1;
+}
+
+.compare-columns {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.compare-heads {
+  margin-bottom: var(--space-3);
+}
+
+.compare-head {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+}
+
+.compare-head-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.compare-head-sub {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.compare-toggle {
+  margin-bottom: var(--space-4);
+}
+
+.compare-group h2 {
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+.compare-row {
+  padding: var(--space-2) 0 var(--space-2) var(--space-3);
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.compare-row.differs {
+  border-left-color: var(--color-accent);
+}
+
+.compare-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.differs-tag {
+  color: var(--color-accent);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.compare-cell {
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+/* Leave room under the last card for the compare bar. */
+.cards.selecting {
+  padding-bottom: 96px;
+}
